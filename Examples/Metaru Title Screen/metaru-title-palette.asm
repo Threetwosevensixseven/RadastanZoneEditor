@@ -1,0 +1,13 @@
+; Zone 0: RASTERCTRL line 52
+; Zone 1: RASTERCTRL line 160
+; Zone 2: RASTERCTRL line 186
+; Zone 3: RASTERCTRL line 192
+
+; CLUT 0 (zone 0) - 005D3D71594D257571F7E3C3A3634323
+  db $00, $5D, $3D, $71, $59, $4D, $25, $75, $71, $F7, $E3, $C3, $A3, $63, $43, $23
+; CLUT 1 (zone 1) - 00244592496EB38E916D49D6D773DBFF
+  db $00, $24, $45, $92, $49, $6E, $B3, $8E, $91, $6D, $49, $D6, $D7, $73, $DB, $FF
+; CLUT 2 (zone 2) - 00E1E1E2E2E3E3E3FF860021C3A060E0
+  db $00, $E1, $E1, $E2, $E2, $E3, $E3, $E3, $FF, $86, $00, $21, $C3, $A0, $60, $E0
+; CLUT 3 (zone 3) - 00000000000000000000000000000000
+  db $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
