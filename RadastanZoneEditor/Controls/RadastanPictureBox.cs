@@ -25,9 +25,9 @@ namespace RadastanZoneEditor.Controls
         int y = 0;
         if (Zones != null)
         {
-          foreach (var zone in Zones)
+          for (int i = 0; i < Zones.Items.Count - 1; i++)
           {
-            y += Convert.ToInt32(zone.Height * mult);
+            y += Convert.ToInt32(Zones.Items[i].Height * mult);
             pe.Graphics.DrawLine(Pens.LimeGreen, 0, y, Width, y);
           }
         }

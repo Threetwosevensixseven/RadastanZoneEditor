@@ -2,32 +2,69 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
+using System.Xml.Serialization;
+using RadastanZoneEditor.Controls;
 
 namespace RadastanZoneEditor.Classes
 {
-  public class Zones : List<Zone>
+  public class Zones 
   {
+    [XmlIgnore]
     public Palette Palette { get; set; }
+    public List<Zone> Items { get; set; }
+    public int CurrentZone { get; set; }
+    public bool Optimized { get; set; }
 
-    public Zones()
+    private Zones()
       : base()
     {
       Palette = new Palette();
-      var zone = new Zone();
+      Items = new List<Zone>();
+    }
+
+    public Zones(bool CreateWithFirstZone) : this()
+    {
+      var zone = new Zone(this);
       zone.Height = 96;
       zone.CLUT = 0;
-      Add(zone);
+      Items.Add(zone);
+      CurrentZone = 1;
+    }
+
+    private void Reparent()
+    {
+      if (Items == null)
+        Items = new List<Zone>();
+      if (Palette == null)
+        Palette = new Palette();
+      if (Items.Count < 1)
+      {
+        var zone = new Zone(this);
+        zone.Height = 96;
+        zone.CLUT = 0;
+        Items.Add(zone);
+        CurrentZone = 1;
+      }
+      foreach (var zone in Items)
+        zone.Reparent(this);
+      if (CurrentZone < 1)
+        CurrentZone = 1;
+      if (CurrentZone > Items.Count)
+        CurrentZone = Items.Count;
+      //RecalculateHeights();
     }
 
     public void RecalculateHeights()
     {
-      int each = this.Count == 0 ? 96 :  (96 / this.Count);
-      var add = 96 - (each * this.Count);
+      int each = Items.Count == 0 ? 96 :  (96 / Items.Count);
+      var add = 96 - (each * Items.Count);
       Zone last = null;
-      foreach (var item in this)
+      foreach (var item in Items)
       {
         item.Height = each;
         last = item;
@@ -38,7 +75,36 @@ namespace RadastanZoneEditor.Classes
 
     public List<Zone> GetZonesForCLUT(int CLUTid)
     {
-      return this.Where(t => t.CLUT == CLUTid).ToList();
+      return Items.Where(t => t.CLUT == CLUTid).ToList();
+    }
+
+    public string GetZoneDescription(int CLUTid)
+    {
+      int count = GetZonesForCLUT(CLUTid).Count;
+      if (count == 0)
+        return "no zones";
+      else if (count == 1)
+      {
+        for (int i = 0; i < Items.Count; i++)
+          if (Items[i].CLUT == CLUTid)
+            return "zone " + i;
+        throw new Exception("Unexpected zone description.");
+      }
+      else
+      {
+        var list = new List<int>();
+        for (int i = 0; i < Items.Count; i++)
+          if (Items[i].CLUT == CLUTid)
+            list.Add(i);
+        string desc = "";
+        string join = "";
+        for (int i = 0; i < list.Count - 1; i++)
+        {
+          desc += join + list[i];
+          join = ", ";
+        }
+        return "zones " + desc + " and " + list[list.Count - 1];
+      }
     }
 
     public Bitmap GetCombinedBitmapForCLUT(Image Img, int CLUTid)
@@ -64,7 +130,7 @@ namespace RadastanZoneEditor.Classes
       }
       byte[] bytes;
       var data = LockBits(bmp, out bytes);
-      foreach (var zone in this)
+      foreach (var zone in Items)
       {
         if (zone.CLUT == CLUTid)
         {
@@ -169,6 +235,93 @@ namespace RadastanZoneEditor.Classes
       for (int p = 0; p < 16; p++)
         clut.Colours[p].OriginalRGB = pal.Entries[p];
       clut.OriginalColourCount = newPal.Count;
+    }
+
+    private string ToXML()
+    {
+      XmlSerializer serializer = new XmlSerializer(typeof(Zones));
+      StringWriter writer = new StringWriter();
+      using (writer)
+      {
+        serializer.Serialize(writer, this);
+        writer.Close();
+        return writer.ToString().Replace("encoding=\"utf-16\"", "encoding=\"utf-8\"");
+      }
+    }
+
+    public static Zones FromXML(string Xml)
+    {
+      Zones zones;
+      try
+      {
+        StringReader reader = new StringReader(Xml);
+        using (reader)
+        {
+          XmlSerializer serializer = new XmlSerializer(typeof(Zones));
+          zones = (Zones)serializer.Deserialize(reader);
+          zones.Reparent();
+          reader.Close();
+        }
+      }
+      catch
+      {
+        zones = new Zones(true);
+      }
+      return zones;
+    }
+
+    public static Zones Open(string FileName, RadastanPictureBox Editor)
+    {
+      try
+      {
+        var fn = (FileName ?? "").Trim();
+        if (!File.Exists(FileName))
+          throw new InvalidOperationException("File \"" + fn + "\" does not exist.");
+        if (Path.GetExtension(fn.ToLower()) != ".png")
+          throw new InvalidOperationException("File \"" + fn + "\" is not a PNG.");
+        Editor.Load(fn);
+        var projFileName = FileName.Replace(".png", ".radzone");
+        Zones zones;
+        if (File.Exists(projFileName))
+        {
+          var xml = File.ReadAllText(projFileName);
+          //MessageBox.Show(xml);
+          zones = Zones.FromXML(xml);
+          if (zones == null || zones.Items.Count < 1)
+            zones = new Zones(true);
+          zones.Reparent();
+        }
+        else
+        {
+          zones = new Zones(true);
+        }
+        Editor.Zones = zones;
+        return zones;
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show(ex.Message, "Radastan Zone Editor", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        return null;
+      }
+    }
+
+    public bool Save(string FileName)
+    {
+      try
+      {
+        var xml = ToXML();
+        //MessageBox.Show(xml);
+        string fn = FileName.Replace(".png", ".radzone");
+        var dir = Path.GetDirectoryName(fn);
+        if (!Directory.Exists(dir))
+          Directory.CreateDirectory(dir);
+        File.WriteAllText(fn, xml);
+        return true;
+      }
+      catch
+      {
+        return false;
+      }
     }
   }
 }

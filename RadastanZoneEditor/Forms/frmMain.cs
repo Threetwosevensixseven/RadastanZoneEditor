@@ -20,15 +20,13 @@ namespace RadastanZoneEditor.Forms
     private Panel[] ulaPlusColours;
     private bool settingUp = true;
     private string fileName = "";
+    private bool dirty = false;
 
     public frmMain()
     {
       InitializeComponent();
-      zones = new Zones();
+      zones = new Zones(true);
       picSource.Zones = zones;
-      cboZone.Items.Clear();
-      cboZone.Items.Add(1);
-      cboZone.SelectedIndex = 0;
       cboClut.Items.Clear();
       cboClut.Items.Add(0);
       cboClut.Items.Add(1);
@@ -82,15 +80,23 @@ namespace RadastanZoneEditor.Forms
       var res = dlgFileOpen.ShowDialog();
       if (res != DialogResult.OK)
         return;
+      var z = Zones.Open(dlgFileOpen.FileName, picSource);
+      if (z == null) return;
       fileName = dlgFileOpen.FileName;
-      if (!File.Exists(fileName))
-      {
-        MessageBox.Show("Cant open file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-        return;
-      }
-      picSource.Load(fileName);
+      zones = z;
+      bool zo = zones.Optimized;
+      saveToolStripMenuItem.Enabled = true;
+      closeToolStripMenuItem.Enabled = true;
       pnlMain.Panel2.Enabled = true;
+      numZones.Value = zones.Items.Count;
+      numZone.Maximum = zones.Items.Count;
+      numZone.Value = zones.CurrentZone;
       numZones_ValueChanged(numZones, new EventArgs());
+      numZone_ValueChanged(numZone, new EventArgs());
+      zones.Optimized = zo;
+      if (zones.Optimized)
+        btnCalculate_Click(btnCalculate, new EventArgs());
+      dirty = false;
     }
 
     private int Quantize(Color Colour)
@@ -104,34 +110,35 @@ namespace RadastanZoneEditor.Forms
 
     private void numZones_ValueChanged(object sender, EventArgs e)
     {
-      int zone = cboZone.SelectedIndex + 1;
-      while (zones.Count > numZones.Value)
+      int zone = Convert.ToInt32(numZone.Value);
+      while (zones.Items.Count > numZones.Value)
       {
-        zones.Remove(zones[zones.Count - 1]);
-        cboZone.Items.Remove(cboZone.Items[cboZone.Items.Count - 1]);
+        zones.Items.Remove(zones.Items[zones.Items.Count - 1]);
       }
-      while (zones.Count < numZones.Value)
+      while (zones.Items.Count < numZones.Value)
       {
-        zones.Add(new Zone());
+        var z = new Zone(zones);
+        zones.Items.Add(z);
+        z.CLUT = z.DefaultCLUT;
         zones.RecalculateHeights();
-        cboZone.Items.Add((cboZone.Items.Count + 1));
       }
-      if (cboZone.Items.Count < zone)
-        cboZone.SelectedIndex = cboZone.Items.Count - 1;
-      else
-        cboZone.SelectedIndex = zone - 1;
-      cboZone_SelectedIndexChanged(cboZone, new EventArgs());
-      picSource.Invalidate(true);
+      if (numZone.Value > numZones.Value)
+        numZone.Value = numZones.Value;
+      numZone.Maximum = numZones.Value;
+      numZone_ValueChanged(numZone, new EventArgs());
+      Recalculate();
     }
 
-    private void cboZone_SelectedIndexChanged(object sender, EventArgs e)
+    private void numZone_ValueChanged(object sender, EventArgs e)
     {
       if (settingUp) return;
-      int val = cboZone.SelectedIndex;
-      var zone = zones[cboZone.SelectedIndex];
+      int zoneval = Convert.ToInt32(numZone.Value);
+      zones.CurrentZone = zoneval;
+      var zone = zones.Items[zoneval - 1];
       var clut = zones.Palette.CLUTs[zone.CLUT];
       settingUp = true;
       numHeight.Value = zone.Height;
+      numHeight.Enabled = !zone.IsLastZone;
       cboClut.SelectedIndex = zone.CLUT;
       settingUp = false;
       for (int i = 0; i < 16; i++)
@@ -139,23 +146,23 @@ namespace RadastanZoneEditor.Forms
       for (int i = 0; i < 16; i++)
         ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
       cboClut_SelectedIndexChanged(cboClut, new EventArgs());
-      picSource.Invalidate(true);
+      Recalculate();
     }
 
     private void numHeight_ValueChanged(object sender, EventArgs e)
     {
       if (settingUp) return;
-      int val = cboZone.SelectedIndex;
-      var zone = zones[cboZone.SelectedIndex];
+      int zoneval = Convert.ToInt32(numZone.Value);
+      var zone = zones.Items[zoneval - 1];
       zone.Height = Convert.ToInt32(numHeight.Value);
-      picSource.Invalidate(true);
+      Recalculate();
     }
 
     private void cboClut_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (settingUp) return;
-      int val = cboZone.SelectedIndex;
-      var zone = zones[cboZone.SelectedIndex];
+      int zoneval = Convert.ToInt32(numZone.Value);
+      var zone = zones.Items[zoneval - 1];
       zone.CLUT = cboClut.SelectedIndex;
       var clut = zones.Palette.CLUTs[zone.CLUT];
       for (int i = 0; i < 16; i++)
@@ -164,20 +171,20 @@ namespace RadastanZoneEditor.Forms
         ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
       lblUniqueVal.Text = clut.OriginalColourCount.ToString();
       lblUniqueVal.ForeColor = clut.OriginalColourCount > 16 ? Color.Red : SystemColors.ControlText;
-      picSource.Invalidate(true);
+      Recalculate();
     }
 
     private void btnCalculate_Click(object sender, EventArgs e)
     {
-      int val = cboZone.SelectedIndex;
-      var zone = zones[cboZone.SelectedIndex];
+      int zoneval = Convert.ToInt32(numZone.Value);
+      var zone = zones.Items[zoneval - 1];
       zone.CLUT = cboClut.SelectedIndex;
       var clut = zones.Palette.CLUTs[zone.CLUT];
       for (int CLUTid = 0; CLUTid < 4; CLUTid++)
       {
         var bmp = zones.GetCombinedBitmapForCLUT(picSource.Image, CLUTid);
         if (bmp == null) continue;
-        bmp.Save(fileName.Replace(".png", "-clut-" + CLUTid + ".png"));
+        //bmp.Save(fileName.Replace(".png", "-clut-" + CLUTid + ".png"));
         zones.SetCLUTFromBitmap(bmp, CLUTid);
       }
       cboClut_SelectedIndexChanged(cboClut, new EventArgs());
@@ -185,6 +192,7 @@ namespace RadastanZoneEditor.Forms
       var rect = new Rectangle(0, 0, src.Width, src.Height);
       var dest = src.Clone(rect, src.PixelFormat);
       picOptimized.Image = dest;
+      picOptimized.Zones = zones;
       tabImage.SelectedTab = tabOptimized;
       var pal = src.Palette;
       for (int i = 0; i < src.Palette.Entries.Length; i++)
@@ -195,7 +203,8 @@ namespace RadastanZoneEditor.Forms
       }
       picOptimized.Image.Palette = pal;
       picOptimized.Invalidate(true);
-      btnExport.Enabled = true;
+      zones.Optimized = true;
+      btnExport.Enabled = zones.Optimized;
     }
 
     private void btnExport_Click(object sender, EventArgs e)
@@ -209,7 +218,7 @@ namespace RadastanZoneEditor.Forms
       picOptimized.Image.Save(filename2);
 
       int y = 0;
-      foreach (var zone in zones)
+      foreach (var zone in zones.Items)
       {
         var clut = zones.Palette.CLUTs[zone.CLUT];
         for (int y1 = 0; y1 < zone.Height; y1++)
@@ -235,10 +244,25 @@ namespace RadastanZoneEditor.Forms
       File.WriteAllBytes(filename3, exportImage.ToArray());
 
       var sb = new StringBuilder();
+      int line = 0;
+      for (int i = 0; i < zones.Items.Count; i++)
+      {
+        line += zones.Items[i].Height * 2;
+        sb.Append("; Zone ");
+        sb.Append(i);
+        sb.Append(": RASTERCTRL line ");
+        sb.AppendLine(line.ToString());
+      }
+      sb.AppendLine();
       for (int i = 0; i < 4; i++)
       {
         var clut = zones.Palette.CLUTs[i];
-        sb.AppendLine("; ULAplus CLUT " + i);
+        sb.Append("; CLUT ");
+        sb.Append(i);
+        sb.Append(" (");
+        sb.Append(zones.GetZoneDescription(i));
+        sb.Append(") - ");
+        sb.AppendLine(clut.HexString);
         sb.Append("  db ");
         string join = "";
         foreach (var col in clut.Colours)
@@ -249,10 +273,93 @@ namespace RadastanZoneEditor.Forms
           join = ", ";
         }
         sb.AppendLine();
-        sb.AppendLine();
       }
       string filename4 = fileName.Replace(".png", "-palette.asm");
       File.WriteAllText(filename4, sb.ToString());
+    }
+
+    private void Recalculate()
+    {
+      dirty = true;
+      picSource.Invalidate(true);
+      picOptimized.Invalidate(true);
+      zones.Optimized = false;
+      btnExport.Enabled = zones.Optimized;
+      //tmrRecalculate.Start();
+    }
+
+    private void tmrRecalculate_Tick(object sender, EventArgs e)
+    {
+      tmrRecalculate.Stop();
+      //btnCalculate_Click(btnCalculate, new EventArgs());
+    }
+
+    private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (e.CloseReason == CloseReason.WindowsShutDown)
+        return;
+      if (dirty)
+      {
+        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor",
+          MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+        if (dr == DialogResult.Cancel)
+        {
+          e.Cancel = true;
+          return;
+        }
+        else if (dr == DialogResult.No)
+          return;
+        if (!zones.Save(fileName))
+        {
+          e.Cancel = true;
+          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return;
+        }
+        saveToolStripMenuItem.Enabled = false;
+        closeToolStripMenuItem.Enabled = false;
+        dirty = false;
+      }
+    }
+
+    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (!zones.Save(fileName))
+      {
+        MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+          MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        return;
+      }
+      dirty = false;
+    }
+
+    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (dirty)
+      {
+        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+        if (dr == DialogResult.Cancel)
+          return;
+        else if (dr == DialogResult.No)
+          return;
+        if (!zones.Save(fileName))
+        {
+          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return;
+        }
+      }
+      picSource.Image = null;
+      picOptimized.Image = null;
+      tabImage.SelectedTab = tabSource;
+      picSource.Invalidate(true);
+      picOptimized.Invalidate(true);
+      zones.Optimized = false;
+      btnExport.Enabled = zones.Optimized;
+      pnlMain.Panel2.Enabled = false;
+      saveToolStripMenuItem.Enabled = false;
+      closeToolStripMenuItem.Enabled = false;
+      dirty = false;
     }
   }
 }

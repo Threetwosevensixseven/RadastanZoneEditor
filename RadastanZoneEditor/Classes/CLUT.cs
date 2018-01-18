@@ -43,5 +43,13 @@ namespace RadastanZoneEditor.Classes
       byte rv = Convert.ToByte((ColourL.Index * 16) + ColourR.Index);
       return rv;
     }
+
+    public string HexString
+    {
+      get
+      {
+        return string.Join("", Colours.Select(c => c.ULAplusByte.ToString("X2").ToUpper()));
+      }
+    }
   }
 }
