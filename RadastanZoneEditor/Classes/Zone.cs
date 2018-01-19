@@ -76,5 +76,19 @@ namespace RadastanZoneEditor.Classes
         return Math.Max(Math.Min(Index, 3), 0);
       }
     }
+
+    public int IndexToCLUT(int Index)
+    {
+      if (Index >= 4)
+        return -1;
+      return Index;
+    }
+
+    public int CLUTToIndex(int CLUT)
+    {
+      if (CLUT < 0)
+        return 4;
+      return Index;
+    }
   }
 }

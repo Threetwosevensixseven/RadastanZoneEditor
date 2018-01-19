@@ -18,10 +18,10 @@
       <Height>32</Height>
     </Zone>
     <Zone>
-      <CLUT>3</CLUT>
+      <CLUT>-1</CLUT>
       <Height>8</Height>
     </Zone>
   </Items>
-  <CurrentZone>1</CurrentZone>
-  <Optimized>false</Optimized>
+  <CurrentZone>4</CurrentZone>
+  <Optimized>true</Optimized>
 </Zones>

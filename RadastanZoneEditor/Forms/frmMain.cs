@@ -32,6 +32,7 @@ namespace RadastanZoneEditor.Forms
       cboClut.Items.Add(1);
       cboClut.Items.Add(2);
       cboClut.Items.Add(3);
+      cboClut.Items.Add("None");
       cboClut.SelectedIndex = 0;
       sourceColours = new Panel[16];
       sourceColours[0] = pnlCol0;
@@ -72,11 +73,6 @@ namespace RadastanZoneEditor.Forms
         Open((args[0] ?? "").Trim());
     }
 
-    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      Application.Exit();
-    }
-
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       var res = dlgFileOpen.ShowDialog();
@@ -95,8 +91,10 @@ namespace RadastanZoneEditor.Forms
       saveToolStripMenuItem.Enabled = true;
       closeToolStripMenuItem.Enabled = true;
       pnlMain.Panel2.Enabled = true;
+      settingUp = true;
       numZones.Value = zones.Items.Count;
       numZone.Maximum = zones.Items.Count;
+      settingUp = false;
       numZone.Value = zones.CurrentZone;
       numZones_ValueChanged(numZones, new EventArgs());
       numZone_ValueChanged(numZone, new EventArgs());
@@ -104,6 +102,11 @@ namespace RadastanZoneEditor.Forms
       if (zones.Optimized)
         btnCalculate_Click(btnCalculate, new EventArgs());
       dirty = false;
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Application.Exit();
     }
 
     private int Quantize(Color Colour)
@@ -142,16 +145,19 @@ namespace RadastanZoneEditor.Forms
       int zoneval = Convert.ToInt32(numZone.Value);
       zones.CurrentZone = zoneval;
       var zone = zones.Items[zoneval - 1];
-      var clut = zones.Palette.CLUTs[zone.CLUT];
       settingUp = true;
       numHeight.Value = zone.Height;
       numHeight.Enabled = !zone.IsLastZone;
-      cboClut.SelectedIndex = zone.CLUT;
+      cboClut.SelectedIndex = zone.CLUTToIndex(zone.CLUT);
       settingUp = false;
-      for (int i = 0; i < 16; i++)
-        sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
-      for (int i = 0; i < 16; i++)
-        ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
+      if (zone.CLUT >= 0)
+      {
+        var clut = zones.Palette.CLUTs[zone.CLUT];
+        for (int i = 0; i < 16; i++)
+          sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
+        for (int i = 0; i < 16; i++)
+          ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
+      }
       cboClut_SelectedIndexChanged(cboClut, new EventArgs());
       Recalculate();
     }
@@ -170,14 +176,17 @@ namespace RadastanZoneEditor.Forms
       if (settingUp) return;
       int zoneval = Convert.ToInt32(numZone.Value);
       var zone = zones.Items[zoneval - 1];
-      zone.CLUT = cboClut.SelectedIndex;
-      var clut = zones.Palette.CLUTs[zone.CLUT];
-      for (int i = 0; i < 16; i++)
-        sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
-      for (int i = 0; i < 16; i++)
-        ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
-      lblUniqueVal.Text = clut.OriginalColourCount.ToString();
-      lblUniqueVal.ForeColor = clut.OriginalColourCount > 16 ? Color.Red : SystemColors.ControlText;
+      zone.CLUT = zone.IndexToCLUT(cboClut.SelectedIndex);
+      if (zone.CLUT >= 0)
+      {
+        var clut = zones.Palette.CLUTs[zone.CLUT];
+        for (int i = 0; i < 16; i++)
+          sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
+        for (int i = 0; i < 16; i++)
+          ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
+        lblUniqueVal.Text = clut.OriginalColourCount.ToString();
+        lblUniqueVal.ForeColor = clut.OriginalColourCount > 16 ? Color.Red : SystemColors.ControlText;
+      }
       Recalculate();
     }
 
@@ -185,8 +194,7 @@ namespace RadastanZoneEditor.Forms
     {
       int zoneval = Convert.ToInt32(numZone.Value);
       var zone = zones.Items[zoneval - 1];
-      zone.CLUT = cboClut.SelectedIndex;
-      var clut = zones.Palette.CLUTs[zone.CLUT];
+      zone.CLUT = zone.IndexToCLUT(cboClut.SelectedIndex);
       for (int CLUTid = 0; CLUTid < 4; CLUTid++)
       {
         var bmp = zones.GetCombinedBitmapForCLUT(picSource.Image, CLUTid);
@@ -227,21 +235,26 @@ namespace RadastanZoneEditor.Forms
       int y = 0;
       foreach (var zone in zones.Items)
       {
-        var clut = zones.Palette.CLUTs[zone.CLUT];
+        CLUT clut = null;
+        if (zone.CLUT >= 0)
+          clut = zones.Palette.CLUTs[zone.CLUT];
         for (int y1 = 0; y1 < zone.Height; y1++)
         {
-          int x = 0;
-          for (int x2 = 0; x2 < (img.Width / 2); x2++)
+          if (zone.CLUT >= 0)
           {
-            var colL = bmp.GetPixel(x, y);
-            var ulaL = clut.GetColourFromULAplusRGB(colL);
-            x++;
-            var colR = bmp.GetPixel(x, y);
-            var ulaR = clut.GetColourFromULAplusRGB(colR);
-            x++;
+            int x = 0;
+            for (int x2 = 0; x2 < (img.Width / 2); x2++)
+            {
+              var colL = bmp.GetPixel(x, y);
+              var ulaL = clut.GetColourFromULAplusRGB(colL);
+              x++;
+              var colR = bmp.GetPixel(x, y);
+              var ulaR = clut.GetColourFromULAplusRGB(colR);
+              x++;
 
-            byte b = clut.GetRadastanColourByte(ulaL, ulaR);
-            exportImage.Add(b);
+              byte b = clut.GetRadastanColourByte(ulaL, ulaR);
+              exportImage.Add(b);
+            }
           }
           y++;
         }
