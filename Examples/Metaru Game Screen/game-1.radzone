@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Zones xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Items>
+    <Zone>
+      <CLUT>0</CLUT>
+      <Height>16</Height>
+    </Zone>
+    <Zone>
+      <CLUT>1</CLUT>
+      <Height>32</Height>
+    </Zone>
+    <Zone>
+      <CLUT>2</CLUT>
+      <Height>8</Height>
+    </Zone>
+    <Zone>
+      <CLUT>3</CLUT>
+      <Height>32</Height>
+    </Zone>
+    <Zone>
+      <CLUT>3</CLUT>
+      <Height>8</Height>
+    </Zone>
+  </Items>
+  <CurrentZone>1</CurrentZone>
+  <Optimized>false</Optimized>
+</Zones>

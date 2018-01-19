@@ -22,7 +22,7 @@ namespace RadastanZoneEditor.Forms
     private string fileName = "";
     private bool dirty = false;
 
-    public frmMain()
+    public frmMain(string[] args)
     {
       InitializeComponent();
       zones = new Zones(true);
@@ -68,6 +68,8 @@ namespace RadastanZoneEditor.Forms
       ulaPlusColours[14] = pnlULA14;
       ulaPlusColours[15] = pnlULA15;
       settingUp = false;
+      if (args.Length >= 1 && !string.IsNullOrWhiteSpace(args[0]))
+        Open((args[0] ?? "").Trim());
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -80,9 +82,14 @@ namespace RadastanZoneEditor.Forms
       var res = dlgFileOpen.ShowDialog();
       if (res != DialogResult.OK)
         return;
-      var z = Zones.Open(dlgFileOpen.FileName, picSource);
+      Open(dlgFileOpen.FileName);
+    }
+
+    private void Open(string FileName)
+    {
+      var z = Zones.Open(FileName, picSource);
       if (z == null) return;
-      fileName = dlgFileOpen.FileName;
+      fileName = FileName;
       zones = z;
       bool zo = zones.Optimized;
       saveToolStripMenuItem.Enabled = true;
