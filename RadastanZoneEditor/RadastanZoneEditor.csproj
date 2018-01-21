@@ -53,6 +53,12 @@
     <Compile Include="Classes\ULAplusColour.cs" />
     <Compile Include="Classes\Zone.cs" />
     <Compile Include="Classes\Zones.cs" />
+    <Compile Include="Forms\frmColour.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmColour.Designer.cs">
+      <DependentUpon>frmColour.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,6 +70,9 @@
     <Compile Include="Controls\RadastanPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Forms\frmColour.resx">
+      <DependentUpon>frmColour.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>

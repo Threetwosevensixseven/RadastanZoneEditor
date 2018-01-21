@@ -22,6 +22,7 @@ namespace RadastanZoneEditor.Forms
     private string fileName = "";
     private bool dirty = false;
     private Settings settings;
+    private frmColour colourForm;
 
     public frmMain(string[] args)
     {
@@ -53,22 +54,22 @@ namespace RadastanZoneEditor.Forms
       sourceColours[14] = pnlCol14;
       sourceColours[15] = pnlCol15;
       ulaPlusColours = new Panel[16];
-      ulaPlusColours[0] = pnlULA0;
-      ulaPlusColours[1] = pnlULA1;
-      ulaPlusColours[2] = pnlULA2;
-      ulaPlusColours[3] = pnlULA3;
-      ulaPlusColours[4] = pnlULA4;
-      ulaPlusColours[5] = pnlULA5;
-      ulaPlusColours[6] = pnlULA6;
-      ulaPlusColours[7] = pnlULA7;
-      ulaPlusColours[8] = pnlULA8;
-      ulaPlusColours[9] = pnlULA9;
-      ulaPlusColours[10] = pnlULA10;
-      ulaPlusColours[11] = pnlULA11;
-      ulaPlusColours[12] = pnlULA12;
-      ulaPlusColours[13] = pnlULA13;
-      ulaPlusColours[14] = pnlULA14;
-      ulaPlusColours[15] = pnlULA15;
+      SetUlaPlusColour(0, pnlULA0);
+      SetUlaPlusColour(1, pnlULA1);
+      SetUlaPlusColour(2, pnlULA2);
+      SetUlaPlusColour(3, pnlULA3);
+      SetUlaPlusColour(4, pnlULA4);
+      SetUlaPlusColour(5, pnlULA5);
+      SetUlaPlusColour(6, pnlULA6);
+      SetUlaPlusColour(7, pnlULA7);
+      SetUlaPlusColour(8, pnlULA8);
+      SetUlaPlusColour(9, pnlULA9);
+      SetUlaPlusColour(10, pnlULA10);
+      SetUlaPlusColour(11, pnlULA11);
+      SetUlaPlusColour(12, pnlULA12);
+      SetUlaPlusColour(13, pnlULA13);
+      SetUlaPlusColour(14, pnlULA14);
+      SetUlaPlusColour(15, pnlULA15);
       settingUp = false;
       AddRecentFile();
       if (args.Length >= 1 && !string.IsNullOrWhiteSpace(args[0]))
@@ -417,6 +418,35 @@ namespace RadastanZoneEditor.Forms
       closeToolStripMenuItem.Enabled = false;
       dirty = false;
       return true;
+    }
+
+    private void SetUlaPlusColour(int Index, Panel Panel)
+    {
+      ulaPlusColours[Index] = Panel;
+      Panel.Tag = Index;
+      ulaPlusColours[Index].Click += Colour_Click;
+    }
+
+    private void Colour_Click(object sender, EventArgs e)
+    {
+      var ctrl = sender as Control;
+      if (ctrl == null) return;
+      if (colourForm == null || colourForm.Disposing)
+        colourForm = new frmColour();
+      colourForm.ShowMe(ctrl, this);
+    }
+
+    public void SetCurrentColour(int Index, Color Color)
+    {
+      if (Index < 0 || Index > 15)
+        return;
+      int zoneval = Convert.ToInt32(numZone.Value);
+      var zone = zones.Items[zoneval - 1];
+      int clutid = zone.IndexToCLUT(cboClut.SelectedIndex);
+      if (clutid < 0) return;
+      var clut = zones.Palette.CLUTs[clutid];
+      clut.Colours[Index].SetULAPlusRGB(Color);
+      ulaPlusColours[Index].BackColor = clut.Colours[Index].ULAplusRGB;
     }
   }
 }
