@@ -21,6 +21,7 @@ namespace RadastanZoneEditor.Forms
     private bool settingUp = true;
     private string fileName = "";
     private bool dirty = false;
+    private Settings settings;
 
     public frmMain(string[] args)
     {
@@ -69,6 +70,7 @@ namespace RadastanZoneEditor.Forms
       ulaPlusColours[14] = pnlULA14;
       ulaPlusColours[15] = pnlULA15;
       settingUp = false;
+      AddRecentFile();
       if (args.Length >= 1 && !string.IsNullOrWhiteSpace(args[0]))
         Open((args[0] ?? "").Trim());
     }
@@ -86,6 +88,7 @@ namespace RadastanZoneEditor.Forms
       var z = Zones.Open(FileName, picSource);
       if (z == null) return;
       fileName = FileName;
+      AddRecentFile(fileName);
       zones = z;
       bool zo = zones.Optimized;
       saveToolStripMenuItem.Enabled = true;
@@ -102,6 +105,31 @@ namespace RadastanZoneEditor.Forms
       if (zones.Optimized)
         btnCalculate_Click(btnCalculate, new EventArgs());
       dirty = false;
+    }
+
+    private void AddRecentFile(string FileName = null)
+    {
+      settings = Settings.Load();
+      settings.AddRecentFile(FileName);
+      settings.Save();
+      recentToolStripMenuItem.DropDownItems.Clear();
+      foreach (string file in settings.Recent)
+      {
+        //var item = recentToolStripMenuItem.DropDownItems.Add(Settings.ShortenPath(file, 60));
+        var item = recentToolStripMenuItem.DropDownItems.Add(file);
+        item.Click += RecentItem_Click;
+        item.Tag = file;
+      }
+    }
+
+    private void RecentItem_Click(object sender, EventArgs e)
+    {
+      if (!SaveAndClose()) return;
+      var item = sender as ToolStripMenuItem;
+      if (item == null) return;
+      var filename = item.Tag as string;
+      if (string.IsNullOrWhiteSpace(filename)) return;
+      Open(filename);
     }
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -355,18 +383,26 @@ namespace RadastanZoneEditor.Forms
 
     private void closeToolStripMenuItem_Click(object sender, EventArgs e)
     {
+      SaveAndClose();
+    }
+
+    private bool SaveAndClose()
+    {
       if (dirty)
       {
         var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
         if (dr == DialogResult.Cancel)
-          return;
+          return false;
         else if (dr == DialogResult.No)
-          return;
+        {
+          dirty = false;
+          return true;
+        }
         if (!zones.Save(fileName))
         {
           MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
             MessageBoxButtons.OK, MessageBoxIcon.Stop);
-          return;
+          return false;
         }
       }
       picSource.Image = null;
@@ -380,6 +416,7 @@ namespace RadastanZoneEditor.Forms
       saveToolStripMenuItem.Enabled = false;
       closeToolStripMenuItem.Enabled = false;
       dirty = false;
+      return true;
     }
   }
 }

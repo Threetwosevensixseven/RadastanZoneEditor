@@ -95,6 +95,9 @@ namespace RadastanZoneEditor.Forms
       this.numZones = new System.Windows.Forms.NumericUpDown();
       this.lblZones = new System.Windows.Forms.Label();
       this.tmrRecalculate = new System.Windows.Forms.Timer(this.components);
+      this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.toolStripMenuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.picSource = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.picOptimized = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.menuStrip1.SuspendLayout();
@@ -132,6 +135,9 @@ namespace RadastanZoneEditor.Forms
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.closeToolStripMenuItem,
+            this.toolStripMenuSeparator1,
+            this.recentToolStripMenuItem,
+            this.toolStripMenuSeparator2,
             this.exitToolStripMenuItem});
       this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
       this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -140,7 +146,7 @@ namespace RadastanZoneEditor.Forms
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.openToolStripMenuItem.Text = "&Open...";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
@@ -148,7 +154,7 @@ namespace RadastanZoneEditor.Forms
       // 
       this.saveToolStripMenuItem.Enabled = false;
       this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-      this.saveToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+      this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.saveToolStripMenuItem.Text = "&Save";
       this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
       // 
@@ -156,14 +162,14 @@ namespace RadastanZoneEditor.Forms
       // 
       this.closeToolStripMenuItem.Enabled = false;
       this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-      this.closeToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+      this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
       // 
       // exitToolStripMenuItem
       // 
       this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-      this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
       this.exitToolStripMenuItem.Text = "E&xit";
       this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
@@ -196,7 +202,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlMain.Panel2.Controls.Add(this.lblZones);
       this.pnlMain.Panel2.Enabled = false;
       this.pnlMain.Size = new System.Drawing.Size(664, 377);
-      this.pnlMain.SplitterDistance = 484;
+      this.pnlMain.SplitterDistance = 483;
       this.pnlMain.TabIndex = 2;
       // 
       // tabImage
@@ -207,7 +213,7 @@ namespace RadastanZoneEditor.Forms
       this.tabImage.Location = new System.Drawing.Point(0, 0);
       this.tabImage.Name = "tabImage";
       this.tabImage.SelectedIndex = 0;
-      this.tabImage.Size = new System.Drawing.Size(484, 377);
+      this.tabImage.Size = new System.Drawing.Size(483, 377);
       this.tabImage.TabIndex = 2;
       // 
       // tabSource
@@ -216,7 +222,7 @@ namespace RadastanZoneEditor.Forms
       this.tabSource.Location = new System.Drawing.Point(4, 22);
       this.tabSource.Name = "tabSource";
       this.tabSource.Padding = new System.Windows.Forms.Padding(3);
-      this.tabSource.Size = new System.Drawing.Size(476, 351);
+      this.tabSource.Size = new System.Drawing.Size(475, 351);
       this.tabSource.TabIndex = 0;
       this.tabSource.Text = "Source";
       this.tabSource.UseVisualStyleBackColor = true;
@@ -227,7 +233,7 @@ namespace RadastanZoneEditor.Forms
       this.tabOptimized.Location = new System.Drawing.Point(4, 22);
       this.tabOptimized.Name = "tabOptimized";
       this.tabOptimized.Padding = new System.Windows.Forms.Padding(3);
-      this.tabOptimized.Size = new System.Drawing.Size(460, 353);
+      this.tabOptimized.Size = new System.Drawing.Size(475, 351);
       this.tabOptimized.TabIndex = 1;
       this.tabOptimized.Text = "Optimized";
       this.tabOptimized.UseVisualStyleBackColor = true;
@@ -249,7 +255,7 @@ namespace RadastanZoneEditor.Forms
             0,
             0});
       this.numZone.Name = "numZone";
-      this.numZone.Size = new System.Drawing.Size(115, 20);
+      this.numZone.Size = new System.Drawing.Size(116, 20);
       this.numZone.TabIndex = 17;
       this.numZone.Value = new decimal(new int[] {
             1,
@@ -270,7 +276,7 @@ namespace RadastanZoneEditor.Forms
       this.tabTools.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
       this.tabTools.Name = "tabTools";
       this.tabTools.SelectedIndex = 0;
-      this.tabTools.Size = new System.Drawing.Size(166, 218);
+      this.tabTools.Size = new System.Drawing.Size(167, 218);
       this.tabTools.TabIndex = 16;
       // 
       // tabColours
@@ -286,7 +292,7 @@ namespace RadastanZoneEditor.Forms
       this.tabColours.Location = new System.Drawing.Point(4, 22);
       this.tabColours.Name = "tabColours";
       this.tabColours.Padding = new System.Windows.Forms.Padding(3);
-      this.tabColours.Size = new System.Drawing.Size(158, 192);
+      this.tabColours.Size = new System.Drawing.Size(159, 192);
       this.tabColours.TabIndex = 0;
       this.tabColours.Text = "Colours";
       this.tabColours.UseVisualStyleBackColor = true;
@@ -334,7 +340,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlULA.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
       this.pnlULA.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
       this.pnlULA.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-      this.pnlULA.Size = new System.Drawing.Size(105, 67);
+      this.pnlULA.Size = new System.Drawing.Size(106, 67);
       this.pnlULA.TabIndex = 21;
       // 
       // pnlULA15
@@ -345,7 +351,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlULA15.Location = new System.Drawing.Point(79, 49);
       this.pnlULA15.Margin = new System.Windows.Forms.Padding(1);
       this.pnlULA15.Name = "pnlULA15";
-      this.pnlULA15.Size = new System.Drawing.Size(25, 17);
+      this.pnlULA15.Size = new System.Drawing.Size(26, 17);
       this.pnlULA15.TabIndex = 15;
       // 
       // pnlULA14
@@ -389,7 +395,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlULA11.Location = new System.Drawing.Point(79, 33);
       this.pnlULA11.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlULA11.Name = "pnlULA11";
-      this.pnlULA11.Size = new System.Drawing.Size(25, 15);
+      this.pnlULA11.Size = new System.Drawing.Size(26, 15);
       this.pnlULA11.TabIndex = 11;
       // 
       // pnlULA10
@@ -433,7 +439,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlULA7.Location = new System.Drawing.Point(79, 17);
       this.pnlULA7.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlULA7.Name = "pnlULA7";
-      this.pnlULA7.Size = new System.Drawing.Size(25, 15);
+      this.pnlULA7.Size = new System.Drawing.Size(26, 15);
       this.pnlULA7.TabIndex = 7;
       // 
       // pnlULA6
@@ -477,7 +483,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlULA3.Location = new System.Drawing.Point(79, 1);
       this.pnlULA3.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlULA3.Name = "pnlULA3";
-      this.pnlULA3.Size = new System.Drawing.Size(25, 15);
+      this.pnlULA3.Size = new System.Drawing.Size(26, 15);
       this.pnlULA3.TabIndex = 3;
       // 
       // pnlULA2
@@ -538,7 +544,7 @@ namespace RadastanZoneEditor.Forms
       this.lblUniqueVal.Location = new System.Drawing.Point(48, 104);
       this.lblUniqueVal.Margin = new System.Windows.Forms.Padding(3);
       this.lblUniqueVal.Name = "lblUniqueVal";
-      this.lblUniqueVal.Size = new System.Drawing.Size(105, 13);
+      this.lblUniqueVal.Size = new System.Drawing.Size(106, 13);
       this.lblUniqueVal.TabIndex = 18;
       this.lblUniqueVal.Text = "0";
       this.lblUniqueVal.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -577,7 +583,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlSource.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
       this.pnlSource.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
       this.pnlSource.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-      this.pnlSource.Size = new System.Drawing.Size(105, 67);
+      this.pnlSource.Size = new System.Drawing.Size(106, 67);
       this.pnlSource.TabIndex = 17;
       // 
       // pnlCol15
@@ -588,7 +594,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlCol15.Location = new System.Drawing.Point(79, 49);
       this.pnlCol15.Margin = new System.Windows.Forms.Padding(1);
       this.pnlCol15.Name = "pnlCol15";
-      this.pnlCol15.Size = new System.Drawing.Size(25, 17);
+      this.pnlCol15.Size = new System.Drawing.Size(26, 17);
       this.pnlCol15.TabIndex = 15;
       // 
       // pnlCol14
@@ -632,7 +638,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlCol11.Location = new System.Drawing.Point(79, 33);
       this.pnlCol11.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlCol11.Name = "pnlCol11";
-      this.pnlCol11.Size = new System.Drawing.Size(25, 15);
+      this.pnlCol11.Size = new System.Drawing.Size(26, 15);
       this.pnlCol11.TabIndex = 11;
       // 
       // pnlCol10
@@ -676,7 +682,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlCol7.Location = new System.Drawing.Point(79, 17);
       this.pnlCol7.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlCol7.Name = "pnlCol7";
-      this.pnlCol7.Size = new System.Drawing.Size(25, 15);
+      this.pnlCol7.Size = new System.Drawing.Size(26, 15);
       this.pnlCol7.TabIndex = 7;
       // 
       // pnlCol6
@@ -720,7 +726,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlCol3.Location = new System.Drawing.Point(79, 1);
       this.pnlCol3.Margin = new System.Windows.Forms.Padding(1, 1, 1, 0);
       this.pnlCol3.Name = "pnlCol3";
-      this.pnlCol3.Size = new System.Drawing.Size(25, 15);
+      this.pnlCol3.Size = new System.Drawing.Size(26, 15);
       this.pnlCol3.TabIndex = 3;
       // 
       // pnlCol2
@@ -778,7 +784,7 @@ namespace RadastanZoneEditor.Forms
             "3"});
       this.cboClut.Location = new System.Drawing.Point(48, 6);
       this.cboClut.Name = "cboClut";
-      this.cboClut.Size = new System.Drawing.Size(105, 21);
+      this.cboClut.Size = new System.Drawing.Size(106, 21);
       this.cboClut.TabIndex = 15;
       // 
       // tabTiles
@@ -786,7 +792,7 @@ namespace RadastanZoneEditor.Forms
       this.tabTiles.Location = new System.Drawing.Point(4, 22);
       this.tabTiles.Name = "tabTiles";
       this.tabTiles.Padding = new System.Windows.Forms.Padding(3);
-      this.tabTiles.Size = new System.Drawing.Size(151, 194);
+      this.tabTiles.Size = new System.Drawing.Size(159, 192);
       this.tabTiles.TabIndex = 1;
       this.tabTiles.Text = "Tiles";
       this.tabTiles.UseVisualStyleBackColor = true;
@@ -798,7 +804,7 @@ namespace RadastanZoneEditor.Forms
       this.btnExport.Enabled = false;
       this.btnExport.Location = new System.Drawing.Point(0, 342);
       this.btnExport.Name = "btnExport";
-      this.btnExport.Size = new System.Drawing.Size(165, 23);
+      this.btnExport.Size = new System.Drawing.Size(166, 23);
       this.btnExport.TabIndex = 15;
       this.btnExport.Text = "Export Data";
       this.btnExport.UseVisualStyleBackColor = true;
@@ -810,7 +816,7 @@ namespace RadastanZoneEditor.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
       this.btnCalculate.Location = new System.Drawing.Point(0, 313);
       this.btnCalculate.Name = "btnCalculate";
-      this.btnCalculate.Size = new System.Drawing.Size(165, 23);
+      this.btnCalculate.Size = new System.Drawing.Size(166, 23);
       this.btnCalculate.TabIndex = 9;
       this.btnCalculate.Text = "Optimize Palette";
       this.btnCalculate.UseVisualStyleBackColor = true;
@@ -832,7 +838,7 @@ namespace RadastanZoneEditor.Forms
             0,
             0});
       this.numHeight.Name = "numHeight";
-      this.numHeight.Size = new System.Drawing.Size(115, 20);
+      this.numHeight.Size = new System.Drawing.Size(116, 20);
       this.numHeight.TabIndex = 5;
       this.numHeight.Value = new decimal(new int[] {
             96,
@@ -875,7 +881,7 @@ namespace RadastanZoneEditor.Forms
             0,
             0});
       this.numZones.Name = "numZones";
-      this.numZones.Size = new System.Drawing.Size(115, 20);
+      this.numZones.Size = new System.Drawing.Size(116, 20);
       this.numZones.TabIndex = 1;
       this.numZones.Value = new decimal(new int[] {
             1,
@@ -898,12 +904,28 @@ namespace RadastanZoneEditor.Forms
       this.tmrRecalculate.Interval = 1;
       this.tmrRecalculate.Tick += new System.EventHandler(this.tmrRecalculate_Tick);
       // 
+      // recentToolStripMenuItem
+      // 
+      this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
+      this.recentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.recentToolStripMenuItem.Text = "&Recent";
+      // 
+      // toolStripMenuSeparator1
+      // 
+      this.toolStripMenuSeparator1.Name = "toolStripMenuSeparator1";
+      this.toolStripMenuSeparator1.Size = new System.Drawing.Size(149, 6);
+      // 
+      // toolStripMenuSeparator2
+      // 
+      this.toolStripMenuSeparator2.Name = "toolStripMenuSeparator2";
+      this.toolStripMenuSeparator2.Size = new System.Drawing.Size(149, 6);
+      // 
       // picSource
       // 
       this.picSource.Dock = System.Windows.Forms.DockStyle.Fill;
       this.picSource.Location = new System.Drawing.Point(3, 3);
       this.picSource.Name = "picSource";
-      this.picSource.Size = new System.Drawing.Size(470, 345);
+      this.picSource.Size = new System.Drawing.Size(469, 345);
       this.picSource.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
       this.picSource.TabIndex = 1;
       this.picSource.TabStop = false;
@@ -913,7 +935,7 @@ namespace RadastanZoneEditor.Forms
       this.picOptimized.Dock = System.Windows.Forms.DockStyle.Fill;
       this.picOptimized.Location = new System.Drawing.Point(3, 3);
       this.picOptimized.Name = "picOptimized";
-      this.picOptimized.Size = new System.Drawing.Size(454, 347);
+      this.picOptimized.Size = new System.Drawing.Size(469, 345);
       this.picOptimized.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
       this.picOptimized.TabIndex = 2;
       this.picOptimized.TabStop = false;
@@ -1023,6 +1045,9 @@ namespace RadastanZoneEditor.Forms
     private System.Windows.Forms.NumericUpDown numZone;
     private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
+    private System.Windows.Forms.ToolStripSeparator toolStripMenuSeparator1;
+    private System.Windows.Forms.ToolStripSeparator toolStripMenuSeparator2;
   }
 }
 
