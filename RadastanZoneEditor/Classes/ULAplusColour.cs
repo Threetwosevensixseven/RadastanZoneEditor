@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,6 @@ namespace RadastanZoneEditor.Classes
 {
   public class ULAplusColour
   {
-    //private static Random rnd = new Random();
-
     private Color _originalRGB = Color.Black;
 
     private int _index;
@@ -19,7 +18,6 @@ namespace RadastanZoneEditor.Classes
 
     public ULAplusColour(int Index)
     {
-      //RGB = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
       OriginalRGB = Color.FromArgb(0, 0, 0);
       _index = Index;
     }
@@ -36,7 +34,13 @@ namespace RadastanZoneEditor.Classes
     {
       get
       {
-        return Color.FromArgb(Red * 32, Green * 32, Blue * 64);
+        int r8 = ((Red & 7) << 5) | ((Red & 7) << 2) | ((Red & 6) >> 1);
+        int g8 = ((Green & 7) << 5) | ((Green & 7) << 2) | ((Green & 6) >> 1);
+        int b3 = ((Blue & 3) << 1) | ((Blue & 2) >> 1) | (Blue & 1);
+        int b8 = ((b3 & 7) << 5) | ((b3 & 7) << 2) | ((b3 & 6) >> 1);
+        //if (Red != 0 || Green != 0 || Blue != 0)
+        //  Debugger.Break();
+        return Color.FromArgb(r8, g8, b8);
       }
     }
 
@@ -44,9 +48,13 @@ namespace RadastanZoneEditor.Classes
     {
       get
       {
-        return Convert.ToByte(Blue + (Red * 4) + (Green * 32));
+        var byt = Convert.ToByte(((Green & 7) << 5) | ((Red & 7) << 2) | (Blue & 3));
+        //if (byt != 0)
+        //  Debugger.Break();
+        return byt;
       }
     }
+
     public Color OriginalRGB
     {
       get
@@ -55,12 +63,23 @@ namespace RadastanZoneEditor.Classes
       }
       set
       {
-        Red = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(value.R) / 32d, 0), 7d));
-        Green = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(value.G) / 32d, 0), 7d));
-        Blue = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(value.B) / 64d, 0), 3d));
+        Red = (value.R & 224) >> 5;
+        Green = (value.G & 224) >> 5;
+        Blue = (value.B & 192) >> 6;
         _originalRGB = value;
+        //if (Red != 0 || Green != 0 || Blue != 0)
+          //Debugger.Break();
       }
     }
+
+    public void SetULAPlusRGB(Color RGB)
+    {
+      Red = (RGB.R & 224) >> 5;
+      Green = (RGB.G & 224) >> 5;
+      Blue = (RGB.B & 192) >> 6;
+    }
+
+    #region HSV
 
     public static void ColorToHSV(Color color, out double hue, out double saturation, out double value)
     {
@@ -171,11 +190,6 @@ namespace RadastanZoneEditor.Classes
       ColorFromHSV(h, s, v);
     }
 
-    public void SetULAPlusRGB(Color RGB)
-    {
-      Red = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(RGB.R) / 32d, 0), 7d));
-      Green = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(RGB.G) / 32d, 0), 7d));
-      Blue = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(RGB.B) / 64d, 0), 3d));
-    }
+    #endregion HSV
   }
 }

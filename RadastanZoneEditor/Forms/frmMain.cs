@@ -138,15 +138,6 @@ namespace RadastanZoneEditor.Forms
       Application.Exit();
     }
 
-    private int Quantize(Color Colour)
-    {
-      int r = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(Colour.R) / 32, 0), 7));
-      int g = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(Colour.G) / 32, 0), 7));
-      int b = Convert.ToInt32(Math.Min(Math.Round(Convert.ToDouble(Colour.B) / 64, 0), 3));
-      int rv = b + (r * 4) + (g * 32);
-      return rv;
-    }
-
     private void numZones_ValueChanged(object sender, EventArgs e)
     {
       int zone = Convert.ToInt32(numZone.Value);
