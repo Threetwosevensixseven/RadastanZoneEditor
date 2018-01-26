@@ -37,6 +37,9 @@ namespace RadastanZoneEditor.Forms
       this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+      this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.toolStripMenuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.dlgFileOpen = new System.Windows.Forms.OpenFileDialog();
       this.pnlMain = new System.Windows.Forms.SplitContainer();
@@ -94,10 +97,9 @@ namespace RadastanZoneEditor.Forms
       this.lblZone = new System.Windows.Forms.Label();
       this.numZones = new System.Windows.Forms.NumericUpDown();
       this.lblZones = new System.Windows.Forms.Label();
-      this.tmrRecalculate = new System.Windows.Forms.Timer(this.components);
-      this.recentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.toolStripMenuSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-      this.toolStripMenuSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+      this.tmrTooltip = new System.Windows.Forms.Timer(this.components);
+      this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+      this.chkBlue = new System.Windows.Forms.CheckBox();
       this.picSource = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.picOptimized = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.menuStrip1.SuspendLayout();
@@ -146,7 +148,7 @@ namespace RadastanZoneEditor.Forms
       // openToolStripMenuItem
       // 
       this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-      this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
       this.openToolStripMenuItem.Text = "&Open...";
       this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
       // 
@@ -154,7 +156,7 @@ namespace RadastanZoneEditor.Forms
       // 
       this.saveToolStripMenuItem.Enabled = false;
       this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-      this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.saveToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
       this.saveToolStripMenuItem.Text = "&Save";
       this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
       // 
@@ -162,14 +164,30 @@ namespace RadastanZoneEditor.Forms
       // 
       this.closeToolStripMenuItem.Enabled = false;
       this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-      this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.closeToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
       this.closeToolStripMenuItem.Text = "&Close";
       this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+      // 
+      // toolStripMenuSeparator1
+      // 
+      this.toolStripMenuSeparator1.Name = "toolStripMenuSeparator1";
+      this.toolStripMenuSeparator1.Size = new System.Drawing.Size(109, 6);
+      // 
+      // recentToolStripMenuItem
+      // 
+      this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
+      this.recentToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+      this.recentToolStripMenuItem.Text = "&Recent";
+      // 
+      // toolStripMenuSeparator2
+      // 
+      this.toolStripMenuSeparator2.Name = "toolStripMenuSeparator2";
+      this.toolStripMenuSeparator2.Size = new System.Drawing.Size(109, 6);
       // 
       // exitToolStripMenuItem
       // 
       this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-      this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
       this.exitToolStripMenuItem.Text = "E&xit";
       this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
@@ -191,6 +209,7 @@ namespace RadastanZoneEditor.Forms
       // 
       // pnlMain.Panel2
       // 
+      this.pnlMain.Panel2.Controls.Add(this.chkBlue);
       this.pnlMain.Panel2.Controls.Add(this.numZone);
       this.pnlMain.Panel2.Controls.Add(this.tabTools);
       this.pnlMain.Panel2.Controls.Add(this.btnExport);
@@ -871,7 +890,7 @@ namespace RadastanZoneEditor.Forms
             | System.Windows.Forms.AnchorStyles.Right)));
       this.numZones.Location = new System.Drawing.Point(49, 10);
       this.numZones.Maximum = new decimal(new int[] {
-            8,
+            16,
             0,
             0,
             0});
@@ -899,26 +918,32 @@ namespace RadastanZoneEditor.Forms
       this.lblZones.TabIndex = 0;
       this.lblZones.Text = "Zones:";
       // 
-      // tmrRecalculate
+      // tmrTooltip
       // 
-      this.tmrRecalculate.Interval = 1;
-      this.tmrRecalculate.Tick += new System.EventHandler(this.tmrRecalculate_Tick);
+      this.tmrTooltip.Enabled = true;
+      this.tmrTooltip.Interval = 32000;
+      this.tmrTooltip.Tick += new System.EventHandler(this.tmrTooltip_Tick);
       // 
-      // recentToolStripMenuItem
+      // toolTip
       // 
-      this.recentToolStripMenuItem.Name = "recentToolStripMenuItem";
-      this.recentToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-      this.recentToolStripMenuItem.Text = "&Recent";
+      this.toolTip.AutoPopDelay = 32767;
+      this.toolTip.InitialDelay = 1;
+      this.toolTip.ReshowDelay = 1;
+      this.toolTip.UseAnimation = false;
+      this.toolTip.UseFading = false;
       // 
-      // toolStripMenuSeparator1
+      // chkBlue
       // 
-      this.toolStripMenuSeparator1.Name = "toolStripMenuSeparator1";
-      this.toolStripMenuSeparator1.Size = new System.Drawing.Size(149, 6);
-      // 
-      // toolStripMenuSeparator2
-      // 
-      this.toolStripMenuSeparator2.Name = "toolStripMenuSeparator2";
-      this.toolStripMenuSeparator2.Size = new System.Drawing.Size(149, 6);
+      this.chkBlue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.chkBlue.AutoSize = true;
+      this.chkBlue.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.chkBlue.Location = new System.Drawing.Point(95, 92);
+      this.chkBlue.Name = "chkBlue";
+      this.chkBlue.Size = new System.Drawing.Size(71, 17);
+      this.chkBlue.TabIndex = 23;
+      this.chkBlue.Text = "v1.1 Blue";
+      this.chkBlue.UseVisualStyleBackColor = true;
+      this.chkBlue.CheckedChanged += new System.EventHandler(this.chkBlue_CheckedChanged);
       // 
       // picSource
       // 
@@ -1041,13 +1066,15 @@ namespace RadastanZoneEditor.Forms
         private System.Windows.Forms.Label lblClut;
         private System.Windows.Forms.ComboBox cboClut;
         private System.Windows.Forms.TabPage tabTiles;
-    private System.Windows.Forms.Timer tmrRecalculate;
+    private System.Windows.Forms.Timer tmrTooltip;
     private System.Windows.Forms.NumericUpDown numZone;
     private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem recentToolStripMenuItem;
     private System.Windows.Forms.ToolStripSeparator toolStripMenuSeparator1;
     private System.Windows.Forms.ToolStripSeparator toolStripMenuSeparator2;
+    private System.Windows.Forms.ToolTip toolTip;
+    private System.Windows.Forms.CheckBox chkBlue;
   }
 }
 

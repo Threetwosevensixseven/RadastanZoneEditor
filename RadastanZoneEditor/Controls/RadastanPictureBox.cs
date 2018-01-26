@@ -21,13 +21,13 @@ namespace RadastanZoneEditor.Controls
       if (!updating)
       {
         updating = true;
-        double mult = Convert.ToDouble(Height) / 96d;
-        int y = 0;
+        float mult = Convert.ToSingle(Height) / 96f;
+        float y = 0;
         if (Zones != null)
         {
           for (int i = 0; i < Zones.Items.Count - 1; i++)
           {
-            y += Convert.ToInt32(Zones.Items[i].Height * mult);
+            y += Zones.Items[i].Height * mult;
             pe.Graphics.DrawLine(Pens.LimeGreen, 0, y, Width, y);
           }
         }

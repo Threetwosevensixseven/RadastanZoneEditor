@@ -174,9 +174,15 @@ namespace RadastanZoneEditor.Forms
       {
         var clut = zones.Palette.CLUTs[zone.CLUT];
         for (int i = 0; i < 16; i++)
+        {
           sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
+          toolTip.SetToolTip(sourceColours[i], clut.Colours[i].OriginalRGBToolTip);
+        }
         for (int i = 0; i < 16; i++)
+        {
           ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
+          toolTip.SetToolTip(ulaPlusColours[i], clut.Colours[i].ULAplusRGBToolTip);
+        }
       }
       cboClut_SelectedIndexChanged(cboClut, new EventArgs());
       Recalculate();
@@ -201,9 +207,15 @@ namespace RadastanZoneEditor.Forms
       {
         var clut = zones.Palette.CLUTs[zone.CLUT];
         for (int i = 0; i < 16; i++)
+        {
           sourceColours[i].BackColor = clut.Colours[i].OriginalRGB;
+          toolTip.SetToolTip(sourceColours[i], clut.Colours[i].OriginalRGBToolTip);
+        }
         for (int i = 0; i < 16; i++)
+        {
           ulaPlusColours[i].BackColor = clut.Colours[i].ULAplusRGB;
+          toolTip.SetToolTip(ulaPlusColours[i], clut.Colours[i].ULAplusRGBToolTip);
+        }
         lblUniqueVal.Text = clut.OriginalColourCount.ToString();
         lblUniqueVal.ForeColor = clut.OriginalColourCount > 16 ? Color.Red : SystemColors.ControlText;
       }
@@ -328,10 +340,10 @@ namespace RadastanZoneEditor.Forms
       //tmrRecalculate.Start();
     }
 
-    private void tmrRecalculate_Tick(object sender, EventArgs e)
+    private void tmrTooltip_Tick(object sender, EventArgs e)
     {
-      tmrRecalculate.Stop();
-      //btnCalculate_Click(btnCalculate, new EventArgs());
+      toolTip.Active = false;
+      toolTip.Active = true;
     }
 
     private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
@@ -438,6 +450,13 @@ namespace RadastanZoneEditor.Forms
       var clut = zones.Palette.CLUTs[clutid];
       clut.Colours[Index].SetULAPlusRGB(Color);
       ulaPlusColours[Index].BackColor = clut.Colours[Index].ULAplusRGB;
+    }
+
+    private void chkBlue_CheckedChanged(object sender, EventArgs e)
+    {
+      foreach (var clut in zones.Palette.CLUTs)
+        clut.OrBlue = chkBlue.Checked;
+      btnCalculate_Click(btnCalculate, new EventArgs());
     }
   }
 }

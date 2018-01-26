@@ -10,16 +10,18 @@ namespace RadastanZoneEditor.Classes
   public class ULAplusColour
   {
     private Color _originalRGB = Color.Black;
+    private CLUT _parentCLUT;
 
     private int _index;
     public int Red { get; set; }
     public int Green { get; set; }
     public int Blue { get; set; }
 
-    public ULAplusColour(int Index)
+    public ULAplusColour(int Index, CLUT ParentCLUT)
     {
       OriginalRGB = Color.FromArgb(0, 0, 0);
       _index = Index;
+      _parentCLUT = ParentCLUT;
     }
 
     public int Index
@@ -30,14 +32,28 @@ namespace RadastanZoneEditor.Classes
       }
     }
 
+    public int Blue3
+    {
+      get
+      {
+        return (Blue << 1) | ((Blue & 2) >> 1) | (Blue & 1);
+      }
+    }
+
     public Color ULAplusRGB
     {
       get
       {
         int r8 = ((Red & 7) << 5) | ((Red & 7) << 2) | ((Red & 6) >> 1);
         int g8 = ((Green & 7) << 5) | ((Green & 7) << 2) | ((Green & 6) >> 1);
-        int b3 = ((Blue & 3) << 1) | ((Blue & 2) >> 1) | (Blue & 1);
-        int b8 = ((b3 & 7) << 5) | ((b3 & 7) << 2) | ((b3 & 6) >> 1);
+        int b8;
+        if (_parentCLUT.OrBlue)
+        {
+          int b3 = Blue3;
+          b8 = ((b3 & 7) << 5) | ((b3 & 7) << 2) | ((b3 & 6) >> 1);
+        }
+        else
+          b8 = ((Blue & 3) << 6) | ((Blue & 3) << 4) | ((Blue & 3) << 2) | (Blue & 3);
         //if (Red != 0 || Green != 0 || Blue != 0)
         //  Debugger.Break();
         return Color.FromArgb(r8, g8, b8);
@@ -54,6 +70,16 @@ namespace RadastanZoneEditor.Classes
         return byt;
       }
     }
+
+    public string ULAplusByteSpaced
+    {
+      get
+      {
+        string val = Convert.ToString(ULAplusByte, 2).PadLeft(8, '0');
+        return val.Substring(0, 3) + " " + val.Substring(3, 3) + " " + val.Substring(6, 2);
+      }
+    }
+
 
     public Color OriginalRGB
     {
@@ -78,6 +104,142 @@ namespace RadastanZoneEditor.Classes
       Green = (RGB.G & 224) >> 5;
       Blue = (RGB.B & 192) >> 6;
     }
+
+    public string OriginalRGBToolTip
+    {
+      get
+      {
+        var col = OriginalRGB;
+        StringBuilder sb = new StringBuilder();
+        sb.Append("#");
+        sb.Append(col.R.ToString("x2"));
+        sb.Append(col.G.ToString("x2"));
+        sb.AppendLine(col.B.ToString("x2"));
+
+        sb.AppendLine();
+        sb.Append("R8: ");
+        sb.Append(Group35(col.R));
+        sb.Append(" (");
+        sb.Append(col.R);
+        sb.Append(") [$");
+        sb.Append(col.R.ToString("X2"));
+        sb.AppendLine("]");
+        sb.Append("G8: ");
+        sb.Append(Group35(col.G));
+        sb.Append(" (");
+        sb.Append(col.G);
+        sb.Append(") [$");
+        sb.Append(col.G.ToString("X2"));
+        sb.AppendLine("]");
+        sb.Append("B8: ");
+        sb.Append(Group35(col.B));
+        sb.Append(" (");
+        sb.Append(col.B);
+        sb.Append(") [$");
+        sb.Append(col.B.ToString("X2"));
+        sb.AppendLine("]");
+
+        return sb.ToString();
+      }
+    }
+
+    public string ULAplusRGBToolTip
+    {
+      get
+      {
+        var col = ULAplusRGB;
+        StringBuilder sb = new StringBuilder();
+        sb.Append("#");
+        sb.Append(col.R.ToString("x2"));
+        sb.Append(col.G.ToString("x2"));
+        sb.AppendLine(col.B.ToString("x2"));
+
+        sb.AppendLine();
+        sb.Append("R3: ");
+        sb.Append(Binary(Red, 3));
+        sb.Append(" (");
+        sb.Append(Red);
+        sb.AppendLine(")");
+        sb.Append("G3: ");
+        sb.Append(Binary(Green, 3));
+        sb.Append(" (");
+        sb.Append(Green);
+        sb.AppendLine(")");
+        sb.Append("B2: ");
+        sb.Append(Binary(Blue, 2));
+        sb.Append(" (");
+        sb.Append(Blue);
+        sb.AppendLine(")");
+        sb.Append("B3: ");
+        sb.Append(Binary(Blue3, 3));
+        sb.Append(" (");
+        sb.Append(Blue3);
+        sb.AppendLine(")");
+
+        sb.AppendLine();
+        sb.Append("GRB8: ");
+        sb.Append(ULAplusByteSpaced);
+        sb.Append(" (");
+        sb.Append(ULAplusByte);
+        sb.Append(") [$");
+        sb.Append(ULAplusByte.ToString("X2"));
+        sb.AppendLine("]");
+
+        sb.AppendLine();
+        sb.Append("R8: ");
+        sb.Append(Group332(col.R));
+        sb.Append(" (");
+        sb.Append(col.R);
+        sb.Append(") [$");
+        sb.Append(col.R.ToString("X2"));
+        sb.AppendLine("]");
+        sb.Append("G8: ");
+        sb.Append(Group332(col.G));
+        sb.Append(" (");
+        sb.Append(col.G);
+        sb.Append(") [$");
+        sb.Append(col.G.ToString("X2"));
+        sb.AppendLine("]");
+        sb.Append("B8: ");
+        sb.Append(Group2222(col.B));
+        sb.Append(" (");
+        sb.Append(col.B);
+        sb.Append(") [$");
+        sb.Append(col.B.ToString("X2"));
+        sb.AppendLine("]");
+
+        sb.AppendLine();
+        sb.AppendLine((_parentCLUT ?? new CLUT()).HexStringSpaced);
+        sb.AppendLine((_parentCLUT ?? new CLUT()).HexString);
+
+        return sb.ToString();
+      }
+    }
+
+    private static string Group332(int Value)
+    {
+      string val = Convert.ToString(Value, 2).PadLeft(8, '0');
+      return val.Substring(0, 3) + " " + val.Substring(3, 3) + " " + val.Substring(6);
+    }
+
+    private static string Group2222(int Value)
+    {
+      string val = Convert.ToString(Value, 2).PadLeft(8, '0');
+      return val.Substring(0, 2) + " " + val.Substring(2, 2) + " " + val.Substring(4, 2) + " " + val.Substring(6);
+    }
+
+    private static string Group35(int Value)
+    {
+      string val = Convert.ToString(Value, 2).PadLeft(8, '0');
+      return val.Substring(0, 3) + " " + val.Substring(3);
+    }
+
+    private static string Binary(int Value, int Length)
+    {
+      return Convert.ToString(Value, 2).PadLeft(Length, '0');
+    }
+
+
 
     #region HSV
 
@@ -153,7 +315,7 @@ namespace RadastanZoneEditor.Classes
       if (h == this.Hue && Hue < this.Hue)
       {
         double h1 = h;
-        var ulac = new ULAplusColour(0);
+        var ulac = new ULAplusColour(0, new Classes.CLUT());
         var rgb = ColorFromHSV(h1, s, v);
         while (rgb == this.ULAplusRGB)
         {
@@ -164,7 +326,7 @@ namespace RadastanZoneEditor.Classes
       else if (h == this.Hue && Hue < this.Hue)
       {
         double h1 = h;
-        var ulac = new ULAplusColour(0);
+        var ulac = new ULAplusColour(0, new CLUT());
         var rgb = ColorFromHSV(h1, s, v);
         while (rgb == this.ULAplusRGB)
         {

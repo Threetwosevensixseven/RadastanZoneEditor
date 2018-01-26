@@ -13,7 +13,7 @@ namespace RadastanZoneEditor.Forms
   public partial class frmColour : Form
   {
     private Control parentControl;
-    private ULAplusColour ulaPlusColour = new ULAplusColour(0);
+    private ULAplusColour ulaPlusColour = new ULAplusColour(0, new CLUT());
     private frmMain parentForm;
     private int colourIndex;
 
@@ -40,7 +40,7 @@ namespace RadastanZoneEditor.Forms
           colourIndex = -1;
         pnlOriginal.BackColor = parentControl.BackColor;
         pnlNew.BackColor = parentControl.BackColor;
-        ulaPlusColour = new ULAplusColour(0);
+        ulaPlusColour = new ULAplusColour(0, new CLUT());
         SetUlaPlusColour(parentControl.BackColor);
       }
       if (!Visible)

@@ -11,11 +11,13 @@ namespace RadastanZoneEditor.Classes
     public ULAplusColour[] Colours;
     public int OriginalColourCount;
 
+    public bool OrBlue { get; set; }
+
     public CLUT()
     {
       Colours = new ULAplusColour[16];
       for (int i = 0; i < 16; i++)
-        Colours[i] = new ULAplusColour(i);
+        Colours[i] = new ULAplusColour(i, this);
     }
 
     public ULAplusColour GetColourFromOriginalRGB(Color OriginalRGB)
@@ -49,6 +51,14 @@ namespace RadastanZoneEditor.Classes
       get
       {
         return string.Join("", Colours.Select(c => c.ULAplusByte.ToString("X2").ToUpper()));
+      }
+    }
+
+    public string HexStringSpaced
+    {
+      get
+      {
+        return string.Join(" ", Colours.Select(c => c.ULAplusByte.ToString("X2").ToUpper()));
       }
     }
   }

@@ -3,21 +3,21 @@
   <Items>
     <Zone>
       <CLUT>0</CLUT>
-      <Height>26</Height>
+      <Height>24</Height>
     </Zone>
     <Zone>
       <CLUT>1</CLUT>
-      <Height>54</Height>
+      <Height>24</Height>
     </Zone>
     <Zone>
       <CLUT>2</CLUT>
-      <Height>13</Height>
+      <Height>24</Height>
     </Zone>
     <Zone>
       <CLUT>3</CLUT>
-      <Height>3</Height>
+      <Height>24</Height>
     </Zone>
   </Items>
-  <CurrentZone>2</CurrentZone>
+  <CurrentZone>1</CurrentZone>
   <Optimized>true</Optimized>
 </Zones>
