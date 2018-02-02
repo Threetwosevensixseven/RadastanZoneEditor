@@ -189,6 +189,7 @@ namespace RadastanZoneEditor.Classes
       int i = 0;
       foreach (var item in Bmp.Palette.Entries)
       {
+        int black = Color.Black.ToArgb();
         if (!oldPal.ContainsKey(item))
         {
           oldPal.Add(item, i);
@@ -196,9 +197,12 @@ namespace RadastanZoneEditor.Classes
         }
         i++;
       }
+
       var newPal = new Dictionary<Color, int>();
       var newPal2 = new Dictionary<int, Color>();
-      int newIndex = 0;
+      newPal.Add(Color.Black, 0);
+      newPal2.Add(0, Color.Black);
+      int newIndex = 1;
       byte[] bytes;
       var data = LockBits(Bmp, out bytes);
       for (int y = 0; y < Bmp.Height; y++)
