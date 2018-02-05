@@ -15,6 +15,8 @@ namespace RadastanZoneEditor.Forms
 {
   public partial class frmMain : Form
   {
+    #region Properties and Constructors
+
     private Zones zones;
     private Panel[] sourceColours;
     private Panel[] ulaPlusColours;
@@ -76,6 +78,10 @@ namespace RadastanZoneEditor.Forms
         Open((args[0] ?? "").Trim());
     }
 
+    #endregion Properties and Constructors
+
+    #region File Menu
+
     private void openToolStripMenuItem_Click(object sender, EventArgs e)
     {
       var res = dlgFileOpen.ShowDialog();
@@ -98,6 +104,10 @@ namespace RadastanZoneEditor.Forms
       settingUp = true;
       numZones.Value = zones.Items.Count;
       numZone.Maximum = zones.Items.Count;
+      numTiles.Value = zones.Tiles.Sets.Count;
+      numTiles_ValueChanged(numTiles, new EventArgs());
+      chkTileCurrent.Checked = zones.Tiles.ShowCurrent;
+      chkTileOthers.Checked = zones.Tiles.ShowOthers;
       settingUp = false;
       numZone.Value = zones.CurrentZone;
       numZones_ValueChanged(numZones, new EventArgs());
@@ -137,6 +147,87 @@ namespace RadastanZoneEditor.Forms
     {
       Application.Exit();
     }
+
+    private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (e.CloseReason == CloseReason.WindowsShutDown)
+        return;
+      if (dirty)
+      {
+        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor",
+          MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+        if (dr == DialogResult.Cancel)
+        {
+          e.Cancel = true;
+          return;
+        }
+        else if (dr == DialogResult.No)
+          return;
+        if (!zones.Save(fileName))
+        {
+          e.Cancel = true;
+          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return;
+        }
+        saveToolStripMenuItem.Enabled = false;
+        closeToolStripMenuItem.Enabled = false;
+        dirty = false;
+      }
+    }
+
+    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      if (!zones.Save(fileName))
+      {
+        MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+          MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        return;
+      }
+      dirty = false;
+    }
+
+    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      SaveAndClose();
+    }
+
+    private bool SaveAndClose()
+    {
+      if (dirty)
+      {
+        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
+        if (dr == DialogResult.Cancel)
+          return false;
+        else if (dr == DialogResult.No)
+        {
+          dirty = false;
+          return true;
+        }
+        if (!zones.Save(fileName))
+        {
+          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
+            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          return false;
+        }
+      }
+      picSource.Image = null;
+      picOptimized.Image = null;
+      tabImage.SelectedTab = tabSource;
+      picSource.Invalidate(true);
+      picOptimized.Invalidate(true);
+      zones.Optimized = false;
+      btnExport.Enabled = zones.Optimized;
+      pnlMain.Panel2.Enabled = false;
+      saveToolStripMenuItem.Enabled = false;
+      closeToolStripMenuItem.Enabled = false;
+      dirty = false;
+      return true;
+    }
+
+    #endregion File Menu
+
+    #region Zones
 
     private void numZones_ValueChanged(object sender, EventArgs e)
     {
@@ -197,6 +288,10 @@ namespace RadastanZoneEditor.Forms
       Recalculate();
     }
 
+    #endregion Zones
+  
+    #region Colours
+
     private void cboClut_SelectedIndexChanged(object sender, EventArgs e)
     {
       if (settingUp) return;
@@ -221,6 +316,52 @@ namespace RadastanZoneEditor.Forms
       }
       Recalculate();
     }
+
+    private void tmrTooltip_Tick(object sender, EventArgs e)
+    {
+      toolTip.Active = false;
+      toolTip.Active = true;
+    }
+
+    private void SetUlaPlusColour(int Index, Panel Panel)
+    {
+      ulaPlusColours[Index] = Panel;
+      Panel.Tag = Index;
+      ulaPlusColours[Index].Click += Colour_Click;
+    }
+
+    private void Colour_Click(object sender, EventArgs e)
+    {
+      var ctrl = sender as Control;
+      if (ctrl == null) return;
+      if (colourForm == null || colourForm.Disposing)
+        colourForm = new frmColour();
+      colourForm.ShowMe(ctrl, this);
+    }
+
+    public void SetCurrentColour(int Index, Color Color)
+    {
+      if (Index < 0 || Index > 15)
+        return;
+      int zoneval = Convert.ToInt32(numZone.Value);
+      var zone = zones.Items[zoneval - 1];
+      int clutid = zone.IndexToCLUT(cboClut.SelectedIndex);
+      if (clutid < 0) return;
+      var clut = zones.Palette.CLUTs[clutid];
+      clut.Colours[Index].SetULAPlusRGB(Color);
+      ulaPlusColours[Index].BackColor = clut.Colours[Index].ULAplusRGB;
+    }
+
+    private void chkBlue_CheckedChanged(object sender, EventArgs e)
+    {
+      foreach (var clut in zones.Palette.CLUTs)
+        clut.OrBlue = chkBlue.Checked;
+      btnCalculate_Click(btnCalculate, new EventArgs());
+    }
+
+    #endregion Colours
+
+    #region Export
 
     private void btnCalculate_Click(object sender, EventArgs e)
     {
@@ -340,124 +481,164 @@ namespace RadastanZoneEditor.Forms
       //tmrRecalculate.Start();
     }
 
-    private void tmrTooltip_Tick(object sender, EventArgs e)
-    {
-      toolTip.Active = false;
-      toolTip.Active = true;
-    }
+    #endregion Export
 
-    private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+    #region Tiles
+
+    private bool _settingUpTiles = false;
+
+    private void numTiles_ValueChanged(object sender, EventArgs e)
     {
-      if (e.CloseReason == CloseReason.WindowsShutDown)
-        return;
-      if (dirty)
+      if (_settingUpTiles) return;
+      _settingUpTiles = true;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      while (zones.Tiles.Sets.Count > numTiles.Value)
       {
-        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor",
-          MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-        if (dr == DialogResult.Cancel)
-        {
-          e.Cancel = true;
-          return;
-        }
-        else if (dr == DialogResult.No)
-          return;
-        if (!zones.Save(fileName))
-        {
-          e.Cancel = true;
-          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
-            MessageBoxButtons.OK, MessageBoxIcon.Stop);
-          return;
-        }
-        saveToolStripMenuItem.Enabled = false;
-        closeToolStripMenuItem.Enabled = false;
-        dirty = false;
+        zones.Tiles.Sets.Remove(zones.Tiles.Sets[zones.Tiles.Sets.Count - 1]);
       }
-    }
-
-    private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      if (!zones.Save(fileName))
+      while (zones.Tiles.Sets.Count < numTiles.Value)
       {
-        MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
-          MessageBoxButtons.OK, MessageBoxIcon.Stop);
-        return;
+        var t = new Tile(zones.Tiles);
+        zones.Tiles.Sets.Add(t);
       }
-      dirty = false;
-    }
-
-    private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-      SaveAndClose();
-    }
-
-    private bool SaveAndClose()
-    {
-      if (dirty)
+      if (numTiles.Value > 0 && numTile.Value > numTiles.Value)
+        numTile.Value = numTiles.Value;
+      if (numTile.Value <= 0)
       {
-        var dr = MessageBox.Show("You have unsaved changes. Save project?", "Radastan Zone Editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1);
-        if (dr == DialogResult.Cancel)
-          return false;
-        else if (dr == DialogResult.No)
-        {
-          dirty = false;
-          return true;
-        }
-        if (!zones.Save(fileName))
-        {
-          MessageBox.Show("The project could not be saved.", "Radastan Zone Editor",
-            MessageBoxButtons.OK, MessageBoxIcon.Stop);
-          return false;
-        }
+        if (numTile.Maximum < 1) numTile.Maximum = 1;
+        numTile.Value = 1;
       }
-      picSource.Image = null;
-      picOptimized.Image = null;
-      tabImage.SelectedTab = tabSource;
+      else numTile.Maximum = numTiles.Value;
+      numTile.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileWidth.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileHeight.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileHCount.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileVCount.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileX.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileY.Enabled = zones.Tiles.Sets.Count > 0;
+      txtTileName.Enabled = zones.Tiles.Sets.Count > 0;
+      _settingUpTiles = false;
+      numTile_ValueChanged(numTile, new EventArgs());
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTile_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      if (numTile.Value < 1) return;
+      _settingUpTiles = true;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      zones.Tiles.CurrentSet = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      numTileWidth.Value = tile.Width;
+      numTileHeight.Value = tile.Height;
+      numTileHCount.Value = tile.HCount;
+      numTileVCount.Value = tile.VCount;
+      numTileX.Value = tile.X;
+      numTileY.Value = tile.Y;
+      txtTileName.Text = (tile.Name ?? "").Trim();
+      _settingUpTiles = false;
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileWidth_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.Width = Convert.ToInt32(numTileWidth.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileHeight_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.Height = Convert.ToInt32(numTileHeight.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileHCount_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.HCount = Convert.ToInt32(numTileHCount.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileVCount_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.VCount = Convert.ToInt32(numTileVCount.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileX_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.X = Convert.ToInt32(numTileX.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void numTileY_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      int tileNo = Convert.ToInt32(numTile.Value);
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.Y = Convert.ToInt32(numTileY.Value);
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void txtTileName_TextChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      if (zones.Tiles.Sets.Count <= 0) return;
+      var tile = zones.Tiles.Sets[zones.Tiles.CurrentSet - 1];
+      tile.Name = (txtTileName.Text ?? "").Trim();
+      dirty = true;
+    }
+
+    private void txtTileName_KeyPress(object sender, KeyPressEventArgs e)
+    {
+      if (_settingUpTiles) return;
+      txtTileName_TextChanged(sender, new EventArgs());
+    }
+
+    private void chkTileOthers_CheckedChanged(object sender, EventArgs e)
+    {
+      zones.Tiles.ShowOthers = chkTileOthers.Checked;
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void chkTileCurrent_CheckedChanged(object sender, EventArgs e)
+    {
+      zones.Tiles.ShowCurrent = chkTileCurrent.Checked;
+      dirty = true;
+      RecalculateTiles();
+    }
+
+    private void RecalculateTiles()
+    {
       picSource.Invalidate(true);
       picOptimized.Invalidate(true);
-      zones.Optimized = false;
-      btnExport.Enabled = zones.Optimized;
-      pnlMain.Panel2.Enabled = false;
-      saveToolStripMenuItem.Enabled = false;
-      closeToolStripMenuItem.Enabled = false;
-      dirty = false;
-      return true;
     }
 
-    private void SetUlaPlusColour(int Index, Panel Panel)
-    {
-      ulaPlusColours[Index] = Panel;
-      Panel.Tag = Index;
-      ulaPlusColours[Index].Click += Colour_Click;
-    }
-
-    private void Colour_Click(object sender, EventArgs e)
-    {
-      var ctrl = sender as Control;
-      if (ctrl == null) return;
-      if (colourForm == null || colourForm.Disposing)
-        colourForm = new frmColour();
-      colourForm.ShowMe(ctrl, this);
-    }
-
-    public void SetCurrentColour(int Index, Color Color)
-    {
-      if (Index < 0 || Index > 15)
-        return;
-      int zoneval = Convert.ToInt32(numZone.Value);
-      var zone = zones.Items[zoneval - 1];
-      int clutid = zone.IndexToCLUT(cboClut.SelectedIndex);
-      if (clutid < 0) return;
-      var clut = zones.Palette.CLUTs[clutid];
-      clut.Colours[Index].SetULAPlusRGB(Color);
-      ulaPlusColours[Index].BackColor = clut.Colours[Index].ULAplusRGB;
-    }
-
-    private void chkBlue_CheckedChanged(object sender, EventArgs e)
-    {
-      foreach (var clut in zones.Palette.CLUTs)
-        clut.OrBlue = chkBlue.Checked;
-      btnCalculate_Click(btnCalculate, new EventArgs());
-    }
+    #endregion Tiles
   }
 }
 

@@ -50,6 +50,8 @@
     <Compile Include="Classes\CLUT.cs" />
     <Compile Include="Classes\Palette.cs" />
     <Compile Include="Classes\Settings.cs" />
+    <Compile Include="Classes\Tile.cs" />
+    <Compile Include="Classes\Tiles.cs" />
     <Compile Include="Classes\ULAplusColour.cs" />
     <Compile Include="Classes\Zone.cs" />
     <Compile Include="Classes\Zones.cs" />

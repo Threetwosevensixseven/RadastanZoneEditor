@@ -12,10 +12,12 @@ namespace RadastanZoneEditor.Classes
   public class Settings
   {
     public List<string> Recent { get; set; }
+    public Tiles Tiles { get; set; }
 
     public Settings()
     {
       Recent = new List<string>();
+      Tiles = new Tiles();
     }
 
     public static Settings Load()

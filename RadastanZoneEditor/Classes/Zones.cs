@@ -19,12 +19,14 @@ namespace RadastanZoneEditor.Classes
     public List<Zone> Items { get; set; }
     public int CurrentZone { get; set; }
     public bool Optimized { get; set; }
+    public Tiles Tiles { get; set; }
 
     private Zones()
       : base()
     {
       Palette = new Palette();
       Items = new List<Zone>();
+      Tiles = new Tiles();
     }
 
     public Zones(bool CreateWithFirstZone) : this()
@@ -56,6 +58,14 @@ namespace RadastanZoneEditor.Classes
         CurrentZone = 1;
       if (CurrentZone > Items.Count)
         CurrentZone = Items.Count;
+
+      foreach (var tile in Tiles.Sets)
+        tile.Reparent(Tiles);
+      if (Tiles.CurrentSet < 1)
+        Tiles.CurrentSet = 1;
+      if (Tiles.CurrentSet > Tiles.Sets.Count)
+        Tiles.CurrentSet = Tiles.Sets.Count;
+
       //RecalculateHeights();
     }
 

@@ -24,4 +24,83 @@
   </Items>
   <CurrentZone>2</CurrentZone>
   <Optimized>true</Optimized>
+  <Tiles>
+    <Sets>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>2</VCount>
+        <HCount>2</HCount>
+        <X>0</X>
+        <Y>0</Y>
+        <Name>Stone ammo box</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>2</VCount>
+        <HCount>2</HCount>
+        <X>16</X>
+        <Y>0</Y>
+        <Name>Wood ammo box</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>4</VCount>
+        <HCount>3</HCount>
+        <X>16</X>
+        <Y>16</Y>
+        <Name>Tank</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>2</VCount>
+        <HCount>1</HCount>
+        <X>8</X>
+        <Y>16</Y>
+        <Name>Tank ammo</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>3</VCount>
+        <HCount>1</HCount>
+        <X>48</X>
+        <Y>16</Y>
+        <Name>Red floor shadow</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>2</VCount>
+        <HCount>1</HCount>
+        <X>56</X>
+        <Y>16</Y>
+        <Name>Red floor</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>1</VCount>
+        <HCount>1</HCount>
+        <X>0</X>
+        <Y>48</Y>
+        <Name>Beach</Name>
+      </Tile>
+      <Tile>
+        <Width>8</Width>
+        <Height>8</Height>
+        <VCount>3</VCount>
+        <HCount>3</HCount>
+        <X>15</X>
+        <Y>56</Y>
+        <Name>Harbour</Name>
+      </Tile>
+    </Sets>
+    <CurrentSet>1</CurrentSet>
+    <ShowCurrent>true</ShowCurrent>
+    <ShowOthers>true</ShowOthers>
+  </Tiles>
 </Zones>
