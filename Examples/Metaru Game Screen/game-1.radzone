@@ -100,7 +100,11 @@
       </Tile>
     </Sets>
     <CurrentSet>1</CurrentSet>
+    <StartIndex>1</StartIndex>
     <ShowCurrent>true</ShowCurrent>
     <ShowOthers>true</ShowOthers>
+    <Sizes>
+      <string>0808</string>
+    </Sizes>
   </Tiles>
 </Zones>

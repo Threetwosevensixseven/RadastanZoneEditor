@@ -33,5 +33,13 @@ namespace RadastanZoneEditor.Classes
     {
       _parent = Parent;
     }
+
+    public string Sort
+    {
+      get
+      {
+        return Width.ToString("X2") + Height.ToString("X2");
+      }
+    }
   }
 }

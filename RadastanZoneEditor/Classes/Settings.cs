@@ -42,7 +42,7 @@ namespace RadastanZoneEditor.Classes
         string xml = ToXML();
         File.WriteAllText(fn, xml);
       }
-      catch (Exception ex)
+      catch /*(Exception ex)*/
       {
         success = false;
       }

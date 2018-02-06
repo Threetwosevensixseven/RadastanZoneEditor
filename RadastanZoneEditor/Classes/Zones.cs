@@ -12,7 +12,7 @@ using RadastanZoneEditor.Controls;
 
 namespace RadastanZoneEditor.Classes
 {
-  public class Zones 
+  public class Zones
   {
     [XmlIgnore]
     public Palette Palette { get; set; }
@@ -71,7 +71,7 @@ namespace RadastanZoneEditor.Classes
 
     public void RecalculateHeights()
     {
-      int each = Items.Count == 0 ? 96 :  (96 / Items.Count);
+      int each = Items.Count == 0 ? 96 : (96 / Items.Count);
       var add = 96 - (each * Items.Count);
       Zone last = null;
       foreach (var item in Items)
@@ -81,7 +81,7 @@ namespace RadastanZoneEditor.Classes
       }
       if (last != null)
         last.Height = last.Height + add;
-     }
+    }
 
     public List<Zone> GetZonesForCLUT(int CLUTid)
     {
@@ -165,7 +165,7 @@ namespace RadastanZoneEditor.Classes
       return bmp;
     }
 
-    private BitmapData LockBits(Bitmap Bmp, out byte[] Bytes)
+    public BitmapData LockBits(Bitmap Bmp, out byte[] Bytes)
     {
       var data = Bmp.LockBits(new Rectangle(0, 0, Bmp.Width, Bmp.Height),
           ImageLockMode.WriteOnly, Bmp.PixelFormat);
@@ -173,20 +173,20 @@ namespace RadastanZoneEditor.Classes
       return data;
     }
 
-    private byte GetLockedPixel(BitmapData Data, byte[] Bytes, int X, int Y)
+    public byte GetLockedPixel(BitmapData Data, byte[] Bytes, int X, int Y)
     {
       Marshal.Copy(Data.Scan0, Bytes, 0, Bytes.Length);
       return Bytes[Y * Data.Stride + X];
     }
 
-    private void SetLockedPixel(BitmapData Data, byte[] Bytes, int X, int Y, byte PaletteIndex)
+    public void SetLockedPixel(BitmapData Data, byte[] Bytes, int X, int Y, byte PaletteIndex)
     {
       Marshal.Copy(Data.Scan0, Bytes, 0, Bytes.Length);
       Bytes[Y * Data.Stride + X] = PaletteIndex;
       Marshal.Copy(Bytes, 0, Data.Scan0, Bytes.Length);
     }
 
-    private void UnlockBits(Bitmap Bmp, ref BitmapData Data)
+    public void UnlockBits(Bitmap Bmp, ref BitmapData Data)
     {
       Bmp.UnlockBits(Data);
     }
@@ -336,6 +336,17 @@ namespace RadastanZoneEditor.Classes
       {
         return false;
       }
+    }
+
+    public CLUT GetCLUTForCoordinate(Image Img, int y)
+    {
+      int dY = 0;
+      foreach (var zone in Items)
+      {
+        dY += zone.Height;
+        if (y <= dY) return Palette.CLUTs[zone.CLUT];
+      }
+      return null;
     }
   }
 }

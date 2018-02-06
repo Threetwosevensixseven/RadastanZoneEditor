@@ -45,7 +45,9 @@ namespace RadastanZoneEditor.Forms
       this.pnlMain = new System.Windows.Forms.SplitContainer();
       this.tabImage = new System.Windows.Forms.TabControl();
       this.tabSource = new System.Windows.Forms.TabPage();
+      this.picSource = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.tabOptimized = new System.Windows.Forms.TabPage();
+      this.picOptimized = new RadastanZoneEditor.Controls.RadastanPictureBox();
       this.chkBlue = new System.Windows.Forms.CheckBox();
       this.numZone = new System.Windows.Forms.NumericUpDown();
       this.tabTools = new System.Windows.Forms.TabControl();
@@ -91,6 +93,10 @@ namespace RadastanZoneEditor.Forms
       this.lblClut = new System.Windows.Forms.Label();
       this.cboClut = new System.Windows.Forms.ComboBox();
       this.tabTiles = new System.Windows.Forms.TabPage();
+      this.chkTileOthers = new System.Windows.Forms.CheckBox();
+      this.chkTileCurrent = new System.Windows.Forms.CheckBox();
+      this.lblTileName = new System.Windows.Forms.Label();
+      this.txtTileName = new System.Windows.Forms.TextBox();
       this.numTileY = new System.Windows.Forms.NumericUpDown();
       this.lblTileY = new System.Windows.Forms.Label();
       this.numTileX = new System.Windows.Forms.NumericUpDown();
@@ -116,12 +122,8 @@ namespace RadastanZoneEditor.Forms
       this.lblZones = new System.Windows.Forms.Label();
       this.tmrTooltip = new System.Windows.Forms.Timer(this.components);
       this.toolTip = new System.Windows.Forms.ToolTip(this.components);
-      this.txtTileName = new System.Windows.Forms.TextBox();
-      this.lblTileName = new System.Windows.Forms.Label();
-      this.chkTileCurrent = new System.Windows.Forms.CheckBox();
-      this.chkTileOthers = new System.Windows.Forms.CheckBox();
-      this.picSource = new RadastanZoneEditor.Controls.RadastanPictureBox();
-      this.picOptimized = new RadastanZoneEditor.Controls.RadastanPictureBox();
+      this.numTileIndex = new System.Windows.Forms.NumericUpDown();
+      this.lblTileIndex = new System.Windows.Forms.Label();
       this.menuStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pnlMain)).BeginInit();
       this.pnlMain.Panel1.SuspendLayout();
@@ -129,7 +131,9 @@ namespace RadastanZoneEditor.Forms
       this.pnlMain.SuspendLayout();
       this.tabImage.SuspendLayout();
       this.tabSource.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.picSource)).BeginInit();
       this.tabOptimized.SuspendLayout();
+      ((System.ComponentModel.ISupportInitialize)(this.picOptimized)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numZone)).BeginInit();
       this.tabTools.SuspendLayout();
       this.tabColours.SuspendLayout();
@@ -146,8 +150,7 @@ namespace RadastanZoneEditor.Forms
       ((System.ComponentModel.ISupportInitialize)(this.numTiles)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numHeight)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.numZones)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.picSource)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.picOptimized)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.numTileIndex)).BeginInit();
       this.SuspendLayout();
       // 
       // menuStrip1
@@ -249,7 +252,7 @@ namespace RadastanZoneEditor.Forms
       this.pnlMain.Panel2.Controls.Add(this.numZones);
       this.pnlMain.Panel2.Controls.Add(this.lblZones);
       this.pnlMain.Panel2.Enabled = false;
-      this.pnlMain.Size = new System.Drawing.Size(726, 449);
+      this.pnlMain.Size = new System.Drawing.Size(726, 469);
       this.pnlMain.SplitterDistance = 527;
       this.pnlMain.TabIndex = 2;
       // 
@@ -261,7 +264,7 @@ namespace RadastanZoneEditor.Forms
       this.tabImage.Location = new System.Drawing.Point(0, 0);
       this.tabImage.Name = "tabImage";
       this.tabImage.SelectedIndex = 0;
-      this.tabImage.Size = new System.Drawing.Size(527, 449);
+      this.tabImage.Size = new System.Drawing.Size(527, 469);
       this.tabImage.TabIndex = 2;
       // 
       // tabSource
@@ -270,10 +273,19 @@ namespace RadastanZoneEditor.Forms
       this.tabSource.Location = new System.Drawing.Point(4, 22);
       this.tabSource.Name = "tabSource";
       this.tabSource.Padding = new System.Windows.Forms.Padding(3);
-      this.tabSource.Size = new System.Drawing.Size(519, 423);
+      this.tabSource.Size = new System.Drawing.Size(519, 443);
       this.tabSource.TabIndex = 0;
       this.tabSource.Text = "Source";
       this.tabSource.UseVisualStyleBackColor = true;
+      // 
+      // picSource
+      // 
+      this.picSource.Location = new System.Drawing.Point(3, 3);
+      this.picSource.Name = "picSource";
+      this.picSource.Size = new System.Drawing.Size(512, 384);
+      this.picSource.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+      this.picSource.TabIndex = 1;
+      this.picSource.TabStop = false;
       // 
       // tabOptimized
       // 
@@ -285,6 +297,15 @@ namespace RadastanZoneEditor.Forms
       this.tabOptimized.TabIndex = 1;
       this.tabOptimized.Text = "Optimized";
       this.tabOptimized.UseVisualStyleBackColor = true;
+      // 
+      // picOptimized
+      // 
+      this.picOptimized.Location = new System.Drawing.Point(3, 3);
+      this.picOptimized.Name = "picOptimized";
+      this.picOptimized.Size = new System.Drawing.Size(512, 384);
+      this.picOptimized.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+      this.picOptimized.TabIndex = 2;
+      this.picOptimized.TabStop = false;
       // 
       // chkBlue
       // 
@@ -337,7 +358,7 @@ namespace RadastanZoneEditor.Forms
       this.tabTools.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
       this.tabTools.Name = "tabTools";
       this.tabTools.SelectedIndex = 0;
-      this.tabTools.Size = new System.Drawing.Size(185, 290);
+      this.tabTools.Size = new System.Drawing.Size(185, 310);
       this.tabTools.TabIndex = 16;
       // 
       // tabColours
@@ -850,6 +871,8 @@ namespace RadastanZoneEditor.Forms
       // 
       // tabTiles
       // 
+      this.tabTiles.Controls.Add(this.numTileIndex);
+      this.tabTiles.Controls.Add(this.lblTileIndex);
       this.tabTiles.Controls.Add(this.chkTileOthers);
       this.tabTiles.Controls.Add(this.chkTileCurrent);
       this.tabTiles.Controls.Add(this.lblTileName);
@@ -873,10 +896,58 @@ namespace RadastanZoneEditor.Forms
       this.tabTiles.Location = new System.Drawing.Point(4, 22);
       this.tabTiles.Name = "tabTiles";
       this.tabTiles.Padding = new System.Windows.Forms.Padding(3);
-      this.tabTiles.Size = new System.Drawing.Size(177, 264);
+      this.tabTiles.Size = new System.Drawing.Size(177, 284);
       this.tabTiles.TabIndex = 1;
       this.tabTiles.Text = "Tiles";
       this.tabTiles.UseVisualStyleBackColor = true;
+      // 
+      // chkTileOthers
+      // 
+      this.chkTileOthers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.chkTileOthers.AutoSize = true;
+      this.chkTileOthers.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.chkTileOthers.Location = new System.Drawing.Point(49, 265);
+      this.chkTileOthers.Name = "chkTileOthers";
+      this.chkTileOthers.Size = new System.Drawing.Size(57, 17);
+      this.chkTileOthers.TabIndex = 25;
+      this.chkTileOthers.Text = "Others";
+      this.chkTileOthers.UseVisualStyleBackColor = true;
+      this.chkTileOthers.CheckedChanged += new System.EventHandler(this.chkTileOthers_CheckedChanged);
+      // 
+      // chkTileCurrent
+      // 
+      this.chkTileCurrent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.chkTileCurrent.AutoSize = true;
+      this.chkTileCurrent.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.chkTileCurrent.Location = new System.Drawing.Point(112, 265);
+      this.chkTileCurrent.Name = "chkTileCurrent";
+      this.chkTileCurrent.Size = new System.Drawing.Size(60, 17);
+      this.chkTileCurrent.TabIndex = 24;
+      this.chkTileCurrent.Text = "Current";
+      this.chkTileCurrent.UseVisualStyleBackColor = true;
+      this.chkTileCurrent.CheckedChanged += new System.EventHandler(this.chkTileCurrent_CheckedChanged);
+      // 
+      // lblTileName
+      // 
+      this.lblTileName.AutoSize = true;
+      this.lblTileName.Location = new System.Drawing.Point(6, 217);
+      this.lblTileName.Name = "lblTileName";
+      this.lblTileName.Size = new System.Drawing.Size(38, 13);
+      this.lblTileName.TabIndex = 19;
+      this.lblTileName.Text = "Name:";
+      // 
+      // txtTileName
+      // 
+      this.txtTileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.txtTileName.Enabled = false;
+      this.txtTileName.Location = new System.Drawing.Point(60, 214);
+      this.txtTileName.MaxLength = 50;
+      this.txtTileName.Name = "txtTileName";
+      this.txtTileName.Size = new System.Drawing.Size(111, 20);
+      this.txtTileName.TabIndex = 18;
+      this.txtTileName.TextChanged += new System.EventHandler(this.txtTileName_TextChanged);
+      this.txtTileName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTileName_KeyPress);
       // 
       // numTileY
       // 
@@ -1132,7 +1203,7 @@ namespace RadastanZoneEditor.Forms
       this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.btnExport.Enabled = false;
-      this.btnExport.Location = new System.Drawing.Point(0, 414);
+      this.btnExport.Location = new System.Drawing.Point(0, 434);
       this.btnExport.Name = "btnExport";
       this.btnExport.Size = new System.Drawing.Size(184, 23);
       this.btnExport.TabIndex = 15;
@@ -1144,7 +1215,7 @@ namespace RadastanZoneEditor.Forms
       // 
       this.btnCalculate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnCalculate.Location = new System.Drawing.Point(0, 385);
+      this.btnCalculate.Location = new System.Drawing.Point(0, 405);
       this.btnCalculate.Name = "btnCalculate";
       this.btnCalculate.Size = new System.Drawing.Size(184, 23);
       this.btnCalculate.TabIndex = 9;
@@ -1243,77 +1314,36 @@ namespace RadastanZoneEditor.Forms
       this.toolTip.UseAnimation = false;
       this.toolTip.UseFading = false;
       // 
-      // txtTileName
+      // numTileIndex
       // 
-      this.txtTileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.numTileIndex.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.txtTileName.Enabled = false;
-      this.txtTileName.Location = new System.Drawing.Point(60, 214);
-      this.txtTileName.MaxLength = 50;
-      this.txtTileName.Name = "txtTileName";
-      this.txtTileName.Size = new System.Drawing.Size(111, 20);
-      this.txtTileName.TabIndex = 18;
-      this.txtTileName.TextChanged += new System.EventHandler(this.txtTileName_TextChanged);
-      this.txtTileName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtTileName_KeyPress);
+      this.numTileIndex.Enabled = false;
+      this.numTileIndex.Location = new System.Drawing.Point(60, 240);
+      this.numTileIndex.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+      this.numTileIndex.Name = "numTileIndex";
+      this.numTileIndex.Size = new System.Drawing.Size(111, 20);
+      this.numTileIndex.TabIndex = 27;
+      this.numTileIndex.ValueChanged += new System.EventHandler(this.numTileIndex_ValueChanged);
       // 
-      // lblTileName
+      // lblTileIndex
       // 
-      this.lblTileName.AutoSize = true;
-      this.lblTileName.Location = new System.Drawing.Point(6, 217);
-      this.lblTileName.Name = "lblTileName";
-      this.lblTileName.Size = new System.Drawing.Size(17, 13);
-      this.lblTileName.TabIndex = 19;
-      this.lblTileName.Text = "Y:";
-      // 
-      // chkTileCurrent
-      // 
-      this.chkTileCurrent.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.chkTileCurrent.AutoSize = true;
-      this.chkTileCurrent.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-      this.chkTileCurrent.Location = new System.Drawing.Point(112, 240);
-      this.chkTileCurrent.Name = "chkTileCurrent";
-      this.chkTileCurrent.Size = new System.Drawing.Size(60, 17);
-      this.chkTileCurrent.TabIndex = 24;
-      this.chkTileCurrent.Text = "Current";
-      this.chkTileCurrent.UseVisualStyleBackColor = true;
-      this.chkTileCurrent.CheckedChanged += new System.EventHandler(this.chkTileCurrent_CheckedChanged);
-      // 
-      // chkTileOthers
-      // 
-      this.chkTileOthers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.chkTileOthers.AutoSize = true;
-      this.chkTileOthers.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-      this.chkTileOthers.Location = new System.Drawing.Point(49, 240);
-      this.chkTileOthers.Name = "chkTileOthers";
-      this.chkTileOthers.Size = new System.Drawing.Size(57, 17);
-      this.chkTileOthers.TabIndex = 25;
-      this.chkTileOthers.Text = "Others";
-      this.chkTileOthers.UseVisualStyleBackColor = true;
-      this.chkTileOthers.CheckedChanged += new System.EventHandler(this.chkTileOthers_CheckedChanged);
-      // 
-      // picSource
-      // 
-      this.picSource.Location = new System.Drawing.Point(3, 3);
-      this.picSource.Name = "picSource";
-      this.picSource.Size = new System.Drawing.Size(512, 384);
-      this.picSource.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-      this.picSource.TabIndex = 1;
-      this.picSource.TabStop = false;
-      // 
-      // picOptimized
-      // 
-      this.picOptimized.Location = new System.Drawing.Point(3, 3);
-      this.picOptimized.Name = "picOptimized";
-      this.picOptimized.Size = new System.Drawing.Size(512, 384);
-      this.picOptimized.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-      this.picOptimized.TabIndex = 2;
-      this.picOptimized.TabStop = false;
+      this.lblTileIndex.AutoSize = true;
+      this.lblTileIndex.Location = new System.Drawing.Point(6, 242);
+      this.lblTileIndex.Name = "lblTileIndex";
+      this.lblTileIndex.Size = new System.Drawing.Size(36, 13);
+      this.lblTileIndex.TabIndex = 26;
+      this.lblTileIndex.Text = "Index:";
       // 
       // frmMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(726, 473);
+      this.ClientSize = new System.Drawing.Size(726, 493);
       this.Controls.Add(this.pnlMain);
       this.Controls.Add(this.menuStrip1);
       this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1331,7 +1361,9 @@ namespace RadastanZoneEditor.Forms
       this.pnlMain.ResumeLayout(false);
       this.tabImage.ResumeLayout(false);
       this.tabSource.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.picSource)).EndInit();
       this.tabOptimized.ResumeLayout(false);
+      ((System.ComponentModel.ISupportInitialize)(this.picOptimized)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numZone)).EndInit();
       this.tabTools.ResumeLayout(false);
       this.tabColours.ResumeLayout(false);
@@ -1350,8 +1382,7 @@ namespace RadastanZoneEditor.Forms
       ((System.ComponentModel.ISupportInitialize)(this.numTiles)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numHeight)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.numZones)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.picSource)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.picOptimized)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.numTileIndex)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -1449,6 +1480,8 @@ namespace RadastanZoneEditor.Forms
     private System.Windows.Forms.CheckBox chkTileCurrent;
     private System.Windows.Forms.Label lblTileName;
     private System.Windows.Forms.TextBox txtTileName;
+    private System.Windows.Forms.NumericUpDown numTileIndex;
+    private System.Windows.Forms.Label lblTileIndex;
   }
 }
 

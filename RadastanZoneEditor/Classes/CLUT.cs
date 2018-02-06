@@ -46,6 +46,20 @@ namespace RadastanZoneEditor.Classes
       return rv;
     }
 
+    public byte GetRadastanColourByte(Color ColourL, Color ColourR)
+    {
+      int left = 0;
+      int right = 0;
+      for (int i = 0; i < Colours.Length; i++)
+      {
+        if (Colours[i].ULAplusRGB == ColourL)
+          left = i;
+        if (Colours[i].ULAplusRGB == ColourR)
+          right = i;
+      }
+      return Convert.ToByte((left * 16) + right);
+    }
+
     public string HexString
     {
       get

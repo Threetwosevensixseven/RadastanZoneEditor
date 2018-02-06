@@ -413,10 +413,11 @@ namespace RadastanZoneEditor.Forms
           clut = zones.Palette.CLUTs[zone.CLUT];
         for (int y1 = 0; y1 < zone.Height; y1++)
         {
-          if (zone.CLUT >= 0)
+          int x = 0;
+          for (int x2 = 0; x2 < (img.Width / 2); x2++)
           {
-            int x = 0;
-            for (int x2 = 0; x2 < (img.Width / 2); x2++)
+            byte b;
+            if (zone.CLUT >= 0)
             {
               var colL = bmp.GetPixel(x, y);
               var ulaL = clut.GetColourFromULAplusRGB(colL);
@@ -425,9 +426,14 @@ namespace RadastanZoneEditor.Forms
               var ulaR = clut.GetColourFromULAplusRGB(colR);
               x++;
 
-              byte b = clut.GetRadastanColourByte(ulaL, ulaR);
-              exportImage.Add(b);
+              b = clut.GetRadastanColourByte(ulaL, ulaR);
             }
+            else
+            {
+              b = 0;
+              x = x + 2;
+            }
+            exportImage.Add(b);
           }
           y++;
         }
@@ -469,6 +475,57 @@ namespace RadastanZoneEditor.Forms
       }
       string filename4 = fileName.Replace(".png", "-palette.asm");
       File.WriteAllText(filename4, sb.ToString());
+
+      sb = new StringBuilder();
+      foreach (string size in zones.Tiles.Sizes)
+      {
+        sb.Append(Tiles.GetDescription(size));
+        sb.AppendLine(" proc Table:");
+        sb.AppendLine();
+        sb.Append(Tiles.GetHeader(size));
+        sb.AppendLine();
+        int index = zones.Tiles.StartIndex;
+        foreach (var tile in zones.Tiles.GetTilesForSize(size))
+        {
+          var clut = zones.GetCLUTForCoordinate(bmp, tile.Y);
+          for (int h = 0; h < tile.VCount; h++)
+          {
+            int ty = tile.Y + (h * tile.Height);
+            string hc = (h + 1).ToString();
+            for (int w = 0; w < tile.HCount; w++)
+            {
+              int tx = tile.X + (w * tile.Width);
+              string wc = ((char)(65 + w)).ToString();
+              string name = (tile.Name ?? "").Trim() + " " + wc + hc;
+              sb.Append("  dh \"");
+              for (int yy = 0; yy < tile.Height; yy++)
+              {
+                int tyy = ty + yy;
+                for (int xx = 0; xx < (tile.Width / 2); xx++)
+                {
+                  int txx = tx + (xx * 2);
+                  var b = exportImage.GetRadastanByte(txx, tyy);
+                  sb.Append(b.ToString("X2"));
+                }
+              }
+              sb.Append("\" ; ");
+              sb.Append(index.ToString().PadLeft(3));
+              sb.Append("  ");
+              sb.AppendLine(name);
+              index++;
+            }
+          }
+        }
+        sb.AppendLine();
+        sb.AppendLine("  Length equ $-Table");
+        sb.Append("  Size   equ ");
+        sb.AppendLine(Tiles.GetLength(size).ToString());
+        sb.AppendLine("  Count  equ Length/Size ");
+        sb.AppendLine("pend");
+        sb.AppendLine();
+      }
+      string filename5 = fileName.Replace(".png", "-tiles.asm");
+      File.WriteAllText(filename5, sb.ToString());
     }
 
     private void Recalculate()
@@ -509,6 +566,7 @@ namespace RadastanZoneEditor.Forms
         numTile.Value = 1;
       }
       else numTile.Maximum = numTiles.Value;
+      numTileIndex.Value = zones.Tiles.StartIndex;
       numTile.Enabled = zones.Tiles.Sets.Count > 0;
       numTileWidth.Enabled = zones.Tiles.Sets.Count > 0;
       numTileHeight.Enabled = zones.Tiles.Sets.Count > 0;
@@ -517,6 +575,7 @@ namespace RadastanZoneEditor.Forms
       numTileX.Enabled = zones.Tiles.Sets.Count > 0;
       numTileY.Enabled = zones.Tiles.Sets.Count > 0;
       txtTileName.Enabled = zones.Tiles.Sets.Count > 0;
+      numTileIndex.Enabled = zones.Tiles.Sets.Count > 0;
       _settingUpTiles = false;
       numTile_ValueChanged(numTile, new EventArgs());
       dirty = true;
@@ -616,6 +675,13 @@ namespace RadastanZoneEditor.Forms
     {
       if (_settingUpTiles) return;
       txtTileName_TextChanged(sender, new EventArgs());
+    }
+
+    private void numTileIndex_ValueChanged(object sender, EventArgs e)
+    {
+      if (_settingUpTiles) return;
+      dirty = true;
+      zones.Tiles.StartIndex = Convert.ToInt32(numTileIndex.Value);
     }
 
     private void chkTileOthers_CheckedChanged(object sender, EventArgs e)

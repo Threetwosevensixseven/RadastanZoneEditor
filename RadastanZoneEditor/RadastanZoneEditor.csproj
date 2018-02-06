@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\CLUT.cs" />
+    <Compile Include="Classes\ListByteExtensions.cs" />
     <Compile Include="Classes\Palette.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Tile.cs" />

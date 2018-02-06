@@ -32,12 +32,38 @@ namespace RadastanZoneEditor.Controls
           }
           if (Zones.Tiles != null && Zones.Tiles.Sets != null)
           {
+            int current = -1;
             for (int i = 0; i < Zones.Tiles.Sets.Count; i++)
             {
               bool isCurr = i == Zones.Tiles.CurrentSet - 1;
               if (isCurr && !Zones.Tiles.ShowCurrent) continue;
               if (!isCurr && !Zones.Tiles.ShowOthers) continue;
+              if (isCurr)
+              {
+                current = i;
+                continue;
+              }
               var col = isCurr ? Pens.Cyan : Pens.Magenta;
+              var t = Zones.Tiles.Sets[i];
+              pe.Graphics.DrawLine(col, t.X * mult, t.Y * mult, (t.X + (t.Width * t.HCount)) * mult, t.Y * mult);
+              pe.Graphics.DrawLine(col, t.X * mult, t.Y * mult, t.X * mult, (t.Y + (t.Height * t.VCount)) * mult);
+              float ty = t.Y;
+              for (int j = 0; j < t.VCount; j++)
+              {
+                ty += t.Height;
+                pe.Graphics.DrawLine(col, t.X * mult, ty * mult, (t.X + (t.Width * t.HCount)) * mult, ty * mult);
+              }
+              float tx = t.X;
+              for (int j = 0; j < t.HCount; j++)
+              {
+                tx += t.Width;
+                pe.Graphics.DrawLine(col, tx * mult, t.Y * mult, tx * mult, (t.Y + (t.Height * t.VCount)) * mult);
+              }
+            }
+            if (current >= 0)
+            {
+              int i = current;
+              var col = Pens.Cyan;
               var t = Zones.Tiles.Sets[i];
               pe.Graphics.DrawLine(col, t.X * mult, t.Y * mult, (t.X + (t.Width * t.HCount)) * mult, t.Y * mult);
               pe.Graphics.DrawLine(col, t.X * mult, t.Y * mult, t.X * mult, (t.Y + (t.Height * t.VCount)) * mult);
